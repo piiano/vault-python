@@ -1,0 +1,35 @@
+# Logs
+logs
+*.log
+
+# Basics
+*.py[cod]
+__pycache__
+
+# Translations
+*.mo
+*.pot
+
+# sqlite
+*.sqlite
+*.sqlite3
+
+# Windows
+.DS_Store
+
+# Python Setup
+dist
+*.egg-info
+build
+
+# Unit test / coverage reports
+.coverage
+.tox
+
+# Vim
+*~
+*.swp
+*.swo
+
+# pyenv
+.python-version
