@@ -16,5 +16,8 @@ been renamed, and updated to support encryption through Piiano Vault's API.
 * `poetry install`
 * `poetry shell`
 * On a mac with vscode: `code .`
+* Make sure you have a local copy of vault running
+* To run tests: `python manage.py test`
+  * Tests should also be available from within vscode.
 
  
