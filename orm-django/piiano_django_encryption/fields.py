@@ -1,8 +1,6 @@
-import enum
-import inspect
 import itertools
 from contextlib import contextmanager
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import django.db
 import django.db.models
@@ -19,13 +17,9 @@ from piiano_django_encryption.vault_wrapper import (EncryptionType, Reason,
 
 
 def get_vault():
-    print("in get_vault, stack: ", list(
-        itertools.islice(reversed(inspect.stack()), 0, 10)))
-    print(settings)
     vault_address = getattr(settings, 'VAULT_ADDRESS', None)
     vault_api_key = getattr(settings, 'VAULT_API_KEY', None)
     default_collection = getattr(settings, "VAULT_DEFAULT_COLLECTION", None)
-    print(vault_address, vault_api_key, default_collection)
 
     if not vault_address:
         raise ImproperlyConfigured('VAULT_ADDRESS must be defined in settings')
@@ -38,11 +32,11 @@ def get_vault():
 _VAULT = get_vault()
 
 
-class RaiseError:
+class _RaiseError:
     pass
 
 
-raise_error = RaiseError()
+raise_error = _RaiseError()
 
 
 class WithVaultOptions(Options):
@@ -50,26 +44,21 @@ class WithVaultOptions(Options):
 
 
 class EncryptedMixin(object):
-    def __init__(self, *args, **kwargs):
-        self._vault_property: Optional[str] = kwargs.pop(
-            'vault_property', None)
+    def __init__(
+            self,
+            *args,
+            vault_property: Optional[str] = None,
+            vault_collection: Optional[str] = None,
+            encryption_type: Optional[EncryptionType] = None,
+            expiration_secs: Optional[int] = None,
+            on_error: Any = None,
+            **kwargs):
+        self._vault_property: Optional[str] = vault_property
+        self.vault_collection = vault_collection
+        self.encryption_type = encryption_type
+        self.expiration_secs = expiration_secs
+        self.on_error = on_error
 
-        if 'vault_collection' in kwargs:
-            self.vault_collection = kwargs.pop('vault_collection')
-        else:
-            self.vault_collection = None
-        if 'encryption_type' in kwargs:
-            self.encryption_type = kwargs.pop('encryption_type')
-        else:
-            self.encryption_type = None
-        if 'expiration_secs' in kwargs:
-            self.expiration_secs = kwargs.pop('expiration_secs')
-        else:
-            self.expiration_secs = None
-        if 'on_error' in kwargs:
-            self.on_error = kwargs.pop('on_error')
-        else:
-            self.on_error = None
         if 'max_length' in kwargs:
             raise ImproperlyConfigured(
                 'max_length is not supported on EncryptedMixin')
@@ -82,7 +71,7 @@ class EncryptedMixin(object):
             return self.name  # type: ignore
         return self._vault_property
 
-    def _get_vault_collection(self):
+    def get_vault_collection(self):
         vault_collection = self.vault_collection
         if vault_collection is None:
             meta = self.model._meta
@@ -96,7 +85,7 @@ class EncryptedMixin(object):
             return None
         if not value:
             return self.to_python(value)
-        vault_collection = self._get_vault_collection()
+        vault_collection = self.get_vault_collection()
         try:
             value = _VAULT.decrypt(
                 ciphertext=value,
@@ -118,7 +107,7 @@ class EncryptedMixin(object):
         if value is None:
             return value
 
-        vault_collection = self._get_vault_collection()
+        vault_collection = self.get_vault_collection()
 
         # decode the encrypted value to a unicode string, else this breaks in pgsql
         result = _VAULT.encrypt(
@@ -185,10 +174,8 @@ class EncryptedBooleanField(EncryptedMixin, django.db.models.BooleanField):
 
 
 class EncryptedNumberMixin(EncryptedMixin):
-    max_length = 20
-
-    @ cached_property
-    def validators(self):
+    @cached_property
+    def validators(self):  # type: ignore[override]
         # These validators can't be added at field initialization time since
         # they're based on values retrieved from `connection`.
         range_validators = []
@@ -202,32 +189,32 @@ class EncryptedNumberMixin(EncryptedMixin):
         return list(itertools.chain(self.default_validators, self._validators, range_validators))
 
 
-class EncryptedIntegerField(EncryptedNumberMixin, django.db.models.IntegerField):
-    description = "An IntegerField that is encrypted before " \
-        "inserting into a database using the python cryptography " \
-        "library"
+class EncryptedIntegerField(EncryptedNumberMixin, django.db.models.IntegerField):  # type: ignore
     pass
 
 
-class EncryptedPositiveIntegerField(EncryptedNumberMixin, django.db.models.PositiveIntegerField):
+# type: ignore
+class EncryptedPositiveIntegerField(EncryptedNumberMixin, django.db.models.PositiveIntegerField):  # type: ignore
     pass
 
 
-class EncryptedSmallIntegerField(EncryptedNumberMixin, django.db.models.SmallIntegerField):
+# type: ignore
+class EncryptedSmallIntegerField(EncryptedNumberMixin, django.db.models.SmallIntegerField):  # type: ignore
     pass
 
 
-class EncryptedPositiveSmallIntegerField(
+class EncryptedPositiveSmallIntegerField(  # type: ignore
         EncryptedNumberMixin, django.db.models.PositiveSmallIntegerField
 ):
     pass
 
 
-class EncryptedBigIntegerField(EncryptedNumberMixin, django.db.models.BigIntegerField):
+# type: ignore
+class EncryptedBigIntegerField(EncryptedNumberMixin, django.db.models.BigIntegerField):  # type: ignore
     pass
 
 
-@ contextmanager
+@contextmanager
 def mask_field(field: EncryptedMixin):
     if isinstance(field, DeferredAttribute):
         field = field.field  # type: ignore
@@ -238,7 +225,20 @@ def mask_field(field: EncryptedMixin):
         _VAULT.remove_mask(field.vault_property, field.vault_collection)
 
 
-@ contextmanager
+@contextmanager
+def transform(transformation_name, field: EncryptedMixin):
+    if isinstance(field, DeferredAttribute):
+        field = field.field  # type: ignore
+    _VAULT.add_transformation(field_name=field.vault_property,
+                              collection_name=field.get_vault_collection(), transformation_name=transformation_name)
+    try:
+        yield
+    finally:
+        _VAULT.remove_transformation(
+            field_name=field.vault_property, collection_name=field.get_vault_collection())
+
+
+@contextmanager
 def with_reason(reason: Reason):
     _VAULT.add_reason(reason)
     try:

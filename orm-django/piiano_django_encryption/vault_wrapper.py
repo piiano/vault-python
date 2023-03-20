@@ -5,6 +5,8 @@ from typing import Any, Dict, List, Optional
 
 import requests
 
+_logger = logging.getLogger(__name__)
+
 
 class Reason(enum.Enum):
     AppFunctionality = "AppFunctionality"
@@ -30,7 +32,16 @@ class EncryptionType(enum.Enum):
 
 
 class VaultException(Exception):
-    pass
+    def __init__(self, message, status_code: int, collection: Optional[str] = None, field_name: Optional[str] = None, reason: Optional[Reason] = None):
+        super().__init__(message)
+        self.status_code = status_code
+        self.message = message
+        self.collection = collection
+        self.field_name = field_name
+        self.reason = reason
+
+    def __str__(self):
+        return f'VaultException({self.message}, status_code={self.status_code}, collection={self.collection}, field_name={self.field_name}, reason={self.reason})'
 
 
 class Vault:
@@ -68,14 +79,15 @@ class Vault:
             transformations = self._init_transformations()
         return transformations
 
-    def make_request(self, method: str, url: str, **kwargs):
+    def make_request(self, method: str, url: str, *, collection: Optional[str] = None, field_name: Optional[str] = None, reason: Optional[Reason] = None, **kwargs):
         session = self._session.get()
         if session is None:
             session = self._init_session()
         try:
             response = session.request(method, url, **kwargs)
         except requests.exceptions.RequestException as e:
-            raise VaultException(f"Request failed: {e}")
+            raise VaultException(f"Request failed: {e}", status_code=response.status_code,
+                                 collection=collection, field_name=field_name, reason=reason)
         # self.log.append(LogLine(method, url, kwargs, response))
         return response
 
@@ -89,7 +101,8 @@ class Vault:
             encryption_type: Optional[EncryptionType] = None,
             expiration_secs: Optional[int] = None) -> str:
 
-        print("ENCRYPT", plaintext, field_name, reason, collection, encryption_type, expiration_secs)
+        _logger.debug("vault encrypt called: %s %s %s %s %s %s", plaintext, field_name,
+                      reason, collection, encryption_type, expiration_secs)
         if reason is None:
             reason = self._reason.get()
         if reason is None:
@@ -106,14 +119,16 @@ class Vault:
             params=query_params,
             json=post_body)
         if response.status_code != 200:
-            raise VaultException(f"Failed to encrypt: {response}, {response.text}")
+            raise VaultException(f"Failed to encrypt: {response}, {response.text}", status_code=response.status_code,
+                                 field_name=field_name, collection=collection, reason=reason)
         return response.json()[0]["ciphertext"]
 
     def decrypt(self, ciphertext: str, field_name: str, reason: Optional[Reason], collection: Optional[str]) -> str:
         transformations = self._get_transformations()
+        print(transformations, collection, field_name)
         if (collection, field_name) in transformations:
             field_name = f'{field_name}.{transformations[(collection, field_name)]}'
-        print("DECRYPT", ciphertext, field_name, reason, collection)
+        logging.debug("vault decrypt called with %s %s %s %s", ciphertext, field_name, reason, collection)
         if reason is None:
             reason = self._reason.get()
         if reason is None:
@@ -123,13 +138,13 @@ class Vault:
             f"{self.vault_url}/api/pvlt/1.0/data/collections/{collection}/decrypt/objects",
             params={"reason": reason.value},
             json=[{"encrypted_object": {"ciphertext": ciphertext}, "props": [field_name]}])
-        print(response.status_code, response.json())
         if response.status_code != 200:
-            raise VaultException(f"Failed to decrypt: {response}, {response.text}")
+            raise VaultException(f"Failed to decrypt: {response}, {response.text}", status_code=response.status_code,
+                                 field_name=field_name, collection=collection, reason=reason)
         return response.json()[0]["fields"][field_name]
 
-    def bulk_decrypt(self, cipertexts: List[str], field_name: str, reason: Optional[Reason], collection: Optional[str]) -> List[str]:
-        print("BULK_DECRYPT", cipertexts, field_name, reason, collection)
+    def bulk_decrypt(self, ciphertexts: List[str], field_name: str, reason: Optional[Reason], collection: Optional[str]) -> List[str]:
+        logging.debug("vault bulk decrypt called with %s %s %s %s", ciphertexts, field_name, reason, collection)
         if reason is None:
             reason = self._reason.get()
         if reason is None:
@@ -138,10 +153,10 @@ class Vault:
             "POST",
             f"{self.vault_url}/api/pvlt/1.0/data/collections/{collection}/decrypt/objects",
             params={"reason": reason.value},
-            json=[{"encrypted_object": {"ciphertext": ciphertext}, "props": [field_name]} for ciphertext in cipertexts])
-        print(response.status_code, response.json())
+            json=[{"encrypted_object": {"ciphertext": ciphertext}, "props": [field_name]} for ciphertext in ciphertexts])
         if response.status_code != 200:
-            raise VaultException(f"Failed to decrypt: {response}, {response.text}")
+            raise VaultException(f"Failed to bulk decrypt: {response}, {response.text}", status_code=response.status_code,
+                                 field_name=field_name, collection=collection, reason=reason)
         return [r["fields"][field_name] for r in response.json()]
 
     def add_collection(self, collection: str, collection_type: str, properties: List[Dict]):
@@ -153,13 +168,15 @@ class Vault:
         )
         response = self.make_request("POST", url, json=fields)
         if response.status_code != 200:
-            raise VaultException(f"Failed to add collection: {response}, {response.text}")
+            raise VaultException(
+                f"Failed to add collection: {response}, {response.text}", status_code=response.status_code, collection=collection)
 
     def remove_collection(self, collection: str):
         url = f"{self.vault_url}/api/pvlt/1.0/ctl/collections/{collection}"
         response = self.make_request("DELETE", url)
         if response.status_code != 200:
-            raise VaultException(f"Failed to remove collection: {response}, {response.text}")
+            raise VaultException(
+                f"Failed to remove collection: {response}, {response.text}", status_code=response.status_code, collection=collection)
 
     def add_property(self, property_name: str, collection: str, description: str, is_encrypted: bool, is_index: bool, is_nullable: bool, is_unique: bool, data_type_name: str):
         url = f"{self.vault_url}/api/pvlt/1.0/ctl/collections/{collection}/properties/{property_name}"
@@ -175,13 +192,15 @@ class Vault:
 
         response = self.make_request("POST", url, json=fields)
         if response.status_code != 200:
-            raise VaultException(f"Failed to add property: {response}, {response.text}")
+            raise VaultException(f"Failed to add property: {response}, {response.text}",
+                                 status_code=response.status_code, collection=collection, field_name=property_name)
 
     def remove_property(self, property_name: str, collection: str):
         url = f"{self.vault_url}/api/pvlt/1.0/ctl/collections/{collection}/properties/{property_name}"
         response = self.make_request("DELETE", url)
         if response.status_code != 200:
-            raise VaultException(f"Failed to remove property: {response}, {response.text}")
+            raise VaultException(f"Failed to remove property: {response}, {response.text}",
+                                 status_code=response.status_code, collection=collection, field_name=property_name)
 
     def add_transformation(self, field_name: str, collection_name: str, transformation_name: str):
         transformations = self._get_transformations()
