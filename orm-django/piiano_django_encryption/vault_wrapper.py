@@ -125,7 +125,7 @@ class Vault:
 
     def decrypt(self, ciphertext: str, field_name: str, reason: Optional[Reason], collection: Optional[str]) -> str:
         transformations = self._get_transformations()
-        print(transformations, collection, field_name)
+        logging.debug("transformations: %s", transformations)
         if (collection, field_name) in transformations:
             field_name = f'{field_name}.{transformations[(collection, field_name)]}'
         logging.debug("vault decrypt called with %s %s %s %s", ciphertext, field_name, reason, collection)
@@ -177,6 +177,14 @@ class Vault:
         if response.status_code != 200:
             raise VaultException(
                 f"Failed to remove collection: {response}, {response.text}", status_code=response.status_code, collection=collection)
+
+    def list_collections(self):
+        url = f"{self.vault_url}/api/pvlt/1.0/ctl/collections"
+        response = self.make_request("GET", url)
+        if response.status_code != 200:
+            raise VaultException(
+                f"Failed to list collections: {response}, {response.text}", status_code=response.status_code)
+        return response.json()
 
     def add_property(self, property_name: str, collection: str, description: str, is_encrypted: bool, is_index: bool, is_nullable: bool, is_unique: bool, data_type_name: str):
         url = f"{self.vault_url}/api/pvlt/1.0/ctl/collections/{collection}/properties/{property_name}"

@@ -1,7 +1,10 @@
 import datetime
-
+import os
 import mock
+import sys
+import time
 from django.core.exceptions import ImproperlyConfigured
+from django.core.management import call_command
 from django.forms import ModelForm
 from django.test import TestCase
 from django.utils import timezone
@@ -9,7 +12,7 @@ from django.utils import timezone
 import piiano_django_encryption.fields
 from piiano_django_encryption import fields
 from piiano_django_encryption.fields import (EncryptedMixin, VaultException,
-                                             get_vault)
+                                             get_vault, mask_field, transform)
 
 from . import models
 
@@ -48,7 +51,7 @@ class TestModelTestCase(TestCase):
                     is_index=False,
                     is_nullable=True,
                     is_unique=False,
-                    data_type_name='string',
+                    data_type_name=field.data_type_name,
                 )
         except VaultException:
             vault.remove_collection(TEST_COLLECTION_NAME)
@@ -72,6 +75,7 @@ class TestModelTestCase(TestCase):
         inst.enc_small_integer_field = 123456789
         inst.enc_positive_small_integer_field = 123456789
         inst.enc_big_integer_field = 9223372036854775807
+        inst.enc_ssn_field = '123-45-6789'
         inst.save()
 
         inst = models.TestModel.objects.get()
@@ -87,6 +91,7 @@ class TestModelTestCase(TestCase):
         self.assertEqual(inst.enc_small_integer_field, 123456789)
         self.assertEqual(inst.enc_positive_small_integer_field, 123456789)
         self.assertEqual(inst.enc_big_integer_field, 9223372036854775807)
+        self.assertEqual(inst.enc_ssn_field, '123-45-6789')
 
         test_date = datetime.date(2012, 2, 1)
         test_datetime = datetime.datetime(2012, 1, 1, 2, tzinfo=timezone.utc)
@@ -100,6 +105,7 @@ class TestModelTestCase(TestCase):
         inst.enc_small_integer_field = -123456789
         inst.enc_positive_small_integer_field = 0
         inst.enc_big_integer_field = -9223372036854775806
+        inst.enc_ssn_field = '987-65-4321'
         inst.save()
 
         inst = models.TestModel.objects.get()
@@ -118,6 +124,7 @@ class TestModelTestCase(TestCase):
         self.assertEqual(inst.enc_small_integer_field, -123456789)
         self.assertEqual(inst.enc_positive_small_integer_field, 0)
         self.assertEqual(inst.enc_big_integer_field, -9223372036854775806)
+        self.assertEqual(inst.enc_ssn_field, '987-65-4321')
 
         inst.save()
         inst = models.TestModel.objects.get()
@@ -143,6 +150,7 @@ class TestModelTestCase(TestCase):
         enc_small_integer_field = models.TestModel._meta.fields[10]
         enc_positive_small_integer_field = models.TestModel._meta.fields[11]
         enc_big_integer_field = models.TestModel._meta.fields[12]
+        enc_ss_field = models.TestModel._meta.fields[13]
 
         self.assertEqual(enc_char_field.get_internal_type(), 'TextField')
         self.assertEqual(enc_text_field.get_internal_type(), 'TextField')
@@ -155,6 +163,7 @@ class TestModelTestCase(TestCase):
         self.assertEqual(enc_small_integer_field.get_internal_type(), 'TextField')
         self.assertEqual(enc_positive_small_integer_field.get_internal_type(), 'TextField')
         self.assertEqual(enc_big_integer_field.get_internal_type(), 'TextField')
+        self.assertEqual(enc_ss_field.get_internal_type(), 'TextField')
 
     def test_auto_date(self):
         enc_date_now_field = models.TestModel._meta.fields[4]
@@ -200,3 +209,40 @@ class TestModelTestCase(TestCase):
                 piiano_django_encryption.fields.EncryptedNumberMixin,
                 inst._meta.get_field('enc_integer_field')
             ).validators
+
+    def test_mask_value(self):
+        inst = models.TestModel()
+
+        inst.enc_ssn_field = '856-45-6789'
+        inst.save()
+
+        with mask_field(models.TestModel.enc_ssn_field):
+            objects = list(models.TestModel.objects.all())
+            self.assertEqual(objects[0].enc_ssn_field, '***-**-6789')
+
+        with transform("mask", models.TestModel.enc_ssn_field):
+            objects = list(models.TestModel.objects.all())
+            self.assertEqual(objects[0].enc_ssn_field, '***-**-6789')
+
+    def test_data_type_name(self):
+        enc_char_field = models.TestModel.enc_char_field.field
+        enc_ssn_field = models.TestModel.enc_ssn_field.field
+        self.assertEqual(enc_char_field.data_type_name, 'string')
+        self.assertEqual(enc_ssn_field.data_type_name, 'SSN')
+
+    def test_migration(self):
+        vault = get_vault()
+        coll_num = len(vault.list_collections())
+        vault.remove_collection(TEST_COLLECTION_NAME)
+        assert len(vault.list_collections()) == coll_num - 1
+
+        # Piping stdout to a file and then running the file
+        stdout_backup, sys.stdout = sys.stdout, open('./vault_migration.py', 'w+')
+        call_command('generate_vault_migration')
+        sys.stdout = stdout_backup
+        os.system("python3 ./vault_migration.py")
+
+        collection = vault.list_collections()[coll_num - 1]
+        self.assertEqual(collection["name"], TEST_COLLECTION_NAME)
+        self.assertEqual(collection["type"], "PERSONS")
+        self.assertEqual(len(collection["properties"]) + 1, len(models.TestModel._meta.get_fields()))

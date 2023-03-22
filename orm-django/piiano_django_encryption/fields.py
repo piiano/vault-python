@@ -55,7 +55,7 @@ class EncryptedMixin(object):
             on_error: Any = None,
             **kwargs):
         self._vault_property: Optional[str] = vault_property
-        self.vault_collection = vault_collection
+        self._vault_collection = vault_collection
         self.encryption_type = encryption_type
         self.expiration_secs = expiration_secs
         self._data_type_name = data_type_name
@@ -79,8 +79,9 @@ class EncryptedMixin(object):
             return self.name  # type: ignore
         return self._vault_property
 
-    def get_vault_collection(self):
-        vault_collection = self.vault_collection
+    @property
+    def vault_collection(self):
+        vault_collection = self._vault_collection
         if vault_collection is None:
             meta = self.model._meta
             vault_collection = getattr(meta, 'vault_collection', None)
@@ -93,7 +94,7 @@ class EncryptedMixin(object):
             return None
         if not value:
             return self.to_python(value)
-        vault_collection = self.get_vault_collection()
+        vault_collection = self.vault_collection
         try:
             value = _VAULT.decrypt(
                 ciphertext=value,
@@ -115,7 +116,7 @@ class EncryptedMixin(object):
         if value is None:
             return value
 
-        vault_collection = self.get_vault_collection()
+        vault_collection = self.vault_collection
 
         # decode the encrypted value to a unicode string, else this breaks in pgsql
         result = _VAULT.encrypt(
@@ -222,6 +223,10 @@ class EncryptedBigIntegerField(EncryptedNumberMixin, django.db.models.BigInteger
     pass
 
 
+class EncryptedSSNField(EncryptedMixin, django.db.models.TextField):
+    pass
+
+
 @contextmanager
 def mask_field(field: EncryptedMixin):
     if isinstance(field, DeferredAttribute):
@@ -238,12 +243,12 @@ def transform(transformation_name, field: EncryptedMixin):
     if isinstance(field, DeferredAttribute):
         field = field.field  # type: ignore
     _VAULT.add_transformation(field_name=field.vault_property,
-                              collection_name=field.get_vault_collection(), transformation_name=transformation_name)
+                              collection_name=field.vault_collection, transformation_name=transformation_name)
     try:
         yield
     finally:
         _VAULT.remove_transformation(
-            field_name=field.vault_property, collection_name=field.get_vault_collection())
+            field_name=field.vault_property, collection_name=field.vault_collection)
 
 
 @contextmanager

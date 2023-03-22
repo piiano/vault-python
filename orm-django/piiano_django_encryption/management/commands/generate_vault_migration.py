@@ -40,7 +40,7 @@ class Command(BaseCommand):
             for field in model._meta.get_fields():
                 if not isinstance(field, EncryptedMixin):
                     continue
-                collection = field.get_vault_collection()
+                collection = field.vault_collection
                 property_name = field.vault_property
                 property_type = field.data_type_name
                 collection_to_fields[collection].append(dict(name=property_name, type=property_type))
