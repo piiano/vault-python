@@ -41,6 +41,27 @@ been renamed, and updated to support encryption through Piiano Vault's API.
     * This tells the encryption SDK to mask the values of MyModel.my_field. So for example, for an SSN you would get "***-**-6789". 
     * All vault's supported transformations are also supported using the `transform` context manager. See [Built-in transformations](https://piiano.com/docs/guides/manage-transformations/built-in-transformations) in Vault's API documentation for a list of Vault's supported transformations.
 
+## Sample code
+
+```
+from django.db import models
+
+from piiano_django_encryption.fields import EncryptedCharField, EncryptedEmailField, EncryptedDateField, EncryptionType
+
+
+class Customer(models.Model):
+    name = EncryptedCharField()
+    email = EncryptedEmailField()
+    phone = EncryptedCharField()
+    address = EncryptedCharField(
+        encryption_type=EncryptionType.randomized, expiration_secs=10)
+    ssn = EncryptedCharField(
+        encryption_type=EncryptionType.randomized)
+    dob = EncryptedDateField()
+```
+
+You can see a full working example in [Piiano's Vault code samples Python repository](https://github.com/piiano/vault-code-samples-python-django).
+
 ## Installation for local development
 
 * Clone the repo
