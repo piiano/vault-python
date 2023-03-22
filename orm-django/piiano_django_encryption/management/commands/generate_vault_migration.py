@@ -60,9 +60,9 @@ TEMPLATE = """
 import os
 from typing import Dict, List
 
-from piiano_django_encryption.fields import VaultException, get_vault
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "__PROJECT_NAME__.settings")
+
+from piiano_django_encryption.fields import VaultException, get_vault # noqa
 
 
 COLLECTION_TO_FIELDS: Dict[str, List[str]] = __COLLECTION_TO_FIELDS__ 
@@ -80,7 +80,7 @@ def main():
             data_type = field['type']
             try:
                 vault.add_property(
-                    property_name=field,
+                    property_name=name,
                     collection=collection_name,
                     description='',
                     is_encrypted=True,
