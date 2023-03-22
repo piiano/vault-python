@@ -36,6 +36,10 @@ jobs:
               sleep 10
               # Runs vault with dev mode and set it a custom customer identifier/env for testing purposes. 
 
+          - name: Run migrations
+            run: |
+              cd orm-django && poetry run python3 manage.py makemigrations && poetry run python3 manage.py migrate
+
           - name: Test plugin
             run: |
               # we cant run poetry shell in this env so we need to run the tests with poetry run.

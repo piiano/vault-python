@@ -222,6 +222,10 @@ class EncryptedBigIntegerField(EncryptedNumberMixin, django.db.models.BigInteger
     pass
 
 
+class EncryptedSSNField(EncryptedMixin, django.db.models.TextField):
+    pass
+
+
 @contextmanager
 def mask_field(field: EncryptedMixin):
     if isinstance(field, DeferredAttribute):

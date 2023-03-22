@@ -16,3 +16,4 @@ class TestModel(django.db.models.Model):
     enc_small_integer_field = fields.EncryptedSmallIntegerField(null=True)
     enc_positive_small_integer_field = fields.EncryptedPositiveSmallIntegerField(null=True)
     enc_big_integer_field = fields.EncryptedBigIntegerField(null=True)
+    enc_ssn_field = fields.EncryptedSSNField(null=True, data_type_name='SSN')
