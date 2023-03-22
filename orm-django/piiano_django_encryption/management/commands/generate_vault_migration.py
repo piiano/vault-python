@@ -42,7 +42,8 @@ class Command(BaseCommand):
                     continue
                 collection = field.get_vault_collection()
                 property_name = field.vault_property
-                collection_to_fields[collection].append(property_name)
+                property_type = field.data_type_name
+                collection_to_fields[collection].append(dict(name=property_name, type=property_type))
         template = TEMPLATE
         project_name = self._get_django_project_name()
         template = template.replace('__PROJECT_NAME__', project_name)
@@ -75,6 +76,8 @@ def main():
         except VaultException:
             pass
         for field in fields:
+            name = field['name']
+            data_type = field['type']
             try:
                 vault.add_property(
                     property_name=field,
@@ -84,7 +87,7 @@ def main():
                     is_index=False,
                     is_nullable=True,
                     is_unique=False,
-                    data_type_name='string',
+                    data_type_name=data_type,
                 )
             except VaultException:
                 pass

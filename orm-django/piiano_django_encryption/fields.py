@@ -51,12 +51,14 @@ class EncryptedMixin(object):
             vault_collection: Optional[str] = None,
             encryption_type: Optional[EncryptionType] = None,
             expiration_secs: Optional[int] = None,
+            data_type_name: Optional[str] = None,
             on_error: Any = None,
             **kwargs):
         self._vault_property: Optional[str] = vault_property
         self.vault_collection = vault_collection
         self.encryption_type = encryption_type
         self.expiration_secs = expiration_secs
+        self._data_type_name = data_type_name
         self.on_error = on_error
 
         if 'max_length' in kwargs:
@@ -65,7 +67,13 @@ class EncryptedMixin(object):
 
         super(EncryptedMixin, self).__init__(*args, **kwargs)
 
-    @ property
+    @property
+    def data_type_name(self) -> str:
+        if self._data_type_name is None:
+            return 'string'
+        return self._data_type_name
+
+    @property
     def vault_property(self) -> str:
         if self._vault_property is None:
             return self.name  # type: ignore
