@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "piiano-django-encryption"
+name = "django-encryption"
 version = "0.1.0"
 description = "A set of fields that wrap standard Django fields with encryption provided Piiano Vault."
 authors = ["Imri Goldberg <imri.goldberg@piiano.com>"]
 license = "MIT"
-packages = [ { include = "piiano_django_encryption" } ]
+packages = [ { include = "django_encryption" } ]
 readme = "README.md"
-repository = "https://github.com/piiano/vault-sdk-python"
+repository = "https://github.com/piiano/vault-python"
 keywords = [ "encryption", "django", "fields" ]
 classifiers = [
         "Development Status :: 2 - Pre-Alpha",

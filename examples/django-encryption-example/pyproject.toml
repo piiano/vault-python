@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "django-encryption-example"
+version = "0.1.0"
+description = ""
+authors = ["Imri Goldberg <lorgandon@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+Django = "^4.1.7"
+django-rest-framework = "^0.1.0"
+requests = "^2.28.2"
+Markdown = "^3.4.1"
+django-filter = "^22.1"
+mypy = "^1.0.1"
+autopep8 = "^2.0.2"
+django-encryption = {path = "../../sdk/orm-django/", develop = true}
+# django-encryption = {path = "../django-encryption"}
+# django-encryption = {git = "https://github.com/piiano/vault-python.git", subdirectory = "orm-django"}
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.2"
+mypy = "^1.0.1"
+pytest-django = "^4.5.2"
+django-stubs = "^1.15.0"
+types-requests = "^2.28.11.15"
+autopep8 = "^2.0.2"
+ipython = "^8.11.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

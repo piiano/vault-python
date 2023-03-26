@@ -1,5 +1,5 @@
 [run]
-include = piiano_django_encryption/*
+include = django_encryption/*
 omit = *migrations*, *tests*
 plugins =
     django_coverage_plugin

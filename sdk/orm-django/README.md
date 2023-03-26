@@ -1,6 +1,14 @@
-# Django Encrypted Model Fields
+<p>
+  <a href="https://piiano.com/pii-data-privacy-vault/">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://piiano.com/docs/img/logo-developers-dark.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://piiano.com/wp-content/uploads/piiano-logo-developers.png">
+      <img alt="Piiano Vault" src="https://piiano.com/wp-content/uploads/piiano-logo-developers.png" height="40" />
+    </picture>
+  </a>
+</p>
 
-[![image](https://travis-ci.org/lanshark/django-encrypted-model-fields.png)](https://travis-ci.org/lanshark/django-encrypted-model-fields)
+# Django Encrypted Model Fields
 
 ## About
 
@@ -18,15 +26,20 @@ been renamed, and updated to support encryption through Piiano Vault's API.
 
 ## Usage
 
-* `pip install piiano-django-encryption`
-* Add to your `settings.py`:
+First install the library:
+```commandLine 
+pip install django-encryption
+```
+
+Add to your `settings.py` (Found in ```vault_sample_django/```):
   * `VAULT_ADDRESS`
   * `VAULT_API_KEY`
   * `VAULT_DEFAULT_COLLECTION`
-  * Note: it is best practice to provide `VAULT_ADDRESS` and `VAULT_API_KEY` via environment variables in production
-  * Add `piiano_django_encryption` to `INSTALLED_APPS`
-* In your `models.py`:
-  * `from piiano_django_encryption.fields import EncryptedCharField` (or any other field type)
+  **Note** it is best practice to provide `VAULT_ADDRESS` and `VAULT_API_KEY` via environment variables in production 
+  * Add `django_encryption` to `INSTALLED_APPS`
+
+In your `models.py` (Found in ```customers/```):
+  * `from django_encryption.fields import EncryptedCharField` (or any other field type)
   * For each model field you would like to encrypt, replace the field name with `EncryptedCharField` (or any other field type):
     * You can provide additional customization per field:
     * optional `encryption_type` - Can be `EncryptionType.randomized` or `EncryptionType.deterministic`
@@ -45,33 +58,34 @@ been renamed, and updated to support encryption through Piiano Vault's API.
 
 ```
 from django.db import models
-
-from piiano_django_encryption.fields import EncryptedCharField, EncryptedEmailField, EncryptedDateField, EncryptionType
+from django_encryption.fields import EncryptedCharField, EncryptedEmailField, EncryptedDateField, EncryptionType
 
 
 class Customer(models.Model):
     name = EncryptedCharField()
     email = EncryptedEmailField()
     phone = EncryptedCharField()
-    address = EncryptedCharField(
-        encryption_type=EncryptionType.randomized, expiration_secs=10)
-    ssn = EncryptedCharField(
-        encryption_type=EncryptionType.randomized)
+    address = EncryptedCharField(encryption_type=EncryptionType.randomized, expiration_secs=10)
+    ssn = EncryptedCharField(encryption_type=EncryptionType.randomized)
     dob = EncryptedDateField()
 ```
 
-You can see a full working example in [Piiano's Vault code samples Python repository](https://github.com/piiano/vault-code-samples-python-django).
+You can see a full working example in [our sample](https://github.com/piiano/vault-sdk-python/blob/af26c121a9912f97c9ba72f296071600c255023e/examples/django-encryption-example).
 
 ## Installation for local development
 
 * Clone the repo
 * Make sure you have [python poetry](https://python-poetry.org/) installed on your machine (a global installation)
-* cd into the directory of the repo
-* `poetry install`
-* `poetry shell`
-* On a mac with vscode: `code .`
-* Make sure you have a local copy of vault running
-* To run tests: `python manage.py test`
+* cd into the directory of the repo (sdk/orm-django)
+
+Run the following commands:
+```commandline
+poetry install
+poetry shell
+```
+  * On a Mac with vscode: `code .`
+
+To run tests: `python manage.py test`
   * Tests should also be available from within vscode.
 
- 
+**NOTE** Make sure you have a local copy of vault running on your machine.

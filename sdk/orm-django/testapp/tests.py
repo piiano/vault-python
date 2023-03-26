@@ -2,16 +2,15 @@ import datetime
 import os
 import mock
 import sys
-import time
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.forms import ModelForm
 from django.test import TestCase
 from django.utils import timezone
 
-import piiano_django_encryption.fields
-from piiano_django_encryption import fields
-from piiano_django_encryption.fields import (EncryptedMixin, VaultException,
+import django_encryption.fields
+from django_encryption import fields
+from django_encryption.fields import (EncryptedMixin, VaultException,
                                              get_vault, mask_field, transform)
 
 from . import models
@@ -199,14 +198,14 @@ class TestModelTestCase(TestCase):
         inst = models.TestModel()
         # Should be safe to call
         super(
-            piiano_django_encryption.fields.EncryptedIntegerField,
+            django_encryption.fields.EncryptedIntegerField,
             inst._meta.get_field('enc_integer_field')
         ).validators
 
         # should fail due to error
         with self.assertRaises(Exception):
             super(
-                piiano_django_encryption.fields.EncryptedNumberMixin,
+                django_encryption.fields.EncryptedNumberMixin,
                 inst._meta.get_field('enc_integer_field')
             ).validators
 

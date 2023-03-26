@@ -1,6 +1,6 @@
 import django.db.models
 
-from piiano_django_encryption import fields
+from django_encryption import fields
 
 
 class TestModel(django.db.models.Model):

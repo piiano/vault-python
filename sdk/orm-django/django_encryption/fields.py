@@ -12,7 +12,7 @@ from django.db.models.query_utils import DeferredAttribute
 from django.utils import timezone
 from django.utils.functional import cached_property
 
-from piiano_django_encryption.vault_wrapper import (EncryptionType, Reason,
+from django_encryption.vault_wrapper import (EncryptionType, Reason,
                                                     Vault, VaultException)
 
 

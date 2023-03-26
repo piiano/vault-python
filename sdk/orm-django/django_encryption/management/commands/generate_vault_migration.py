@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db.models import Model
 
-from piiano_django_encryption.fields import EncryptedMixin, get_vault
+from django_encryption.fields import EncryptedMixin, get_vault
 
 
 class Command(BaseCommand):
@@ -62,7 +62,7 @@ from typing import Dict, List
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "__PROJECT_NAME__.settings")
 
-from piiano_django_encryption.fields import VaultException, get_vault # noqa
+from django_encryption.fields import VaultException, get_vault # noqa
 
 
 COLLECTION_TO_FIELDS: Dict[str, List[str]] = __COLLECTION_TO_FIELDS__ 
