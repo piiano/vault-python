@@ -11,7 +11,7 @@
 # Django-encryption-example
 
 ## About
-The sample has been built using the Django web framework and utilizes the [ORM](https://github.com/piiano/vault-sdk-python/blob/af26c121a9912f97c9ba72f296071600c255023e/sdk/orm-django) to interact with the underlying database. The sample website has several features, including the ability to create and manage users.
+The sample has been built using the Django web framework and utilizes the [orm-django](https://github.com/piiano/vault-sdk-python/blob/af26c121a9912f97c9ba72f296071600c255023e/sdk/orm-django) to interact with the underlying database. The sample website has several features, including the ability to create and manage users.
 
 As this sample utilizing Piiano vault's features, we are enabled to encrypt / decrypt personal information such as SSN.
 
@@ -30,8 +30,7 @@ poetry shell
 
 4. Create a local_settings.py, you can just copy local_settings_example.py to local_settings.py locally
 
-**Make sure you have a local copy of vault running**
-Then run the following commands:
+**Make sure you have a local copy of vault running** then run the following commands:
 
 `python manage.py migrate`
 

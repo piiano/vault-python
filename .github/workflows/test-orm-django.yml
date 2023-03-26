@@ -20,7 +20,7 @@ jobs:
               curl -sSL https://install.python-poetry.org | python3 -
 
           - name: Install dependencies
-            run: cd orm-django && poetry install
+            run: cd sdk/orm-django && poetry install
 
           - name: Run vault
             run: |
@@ -38,11 +38,11 @@ jobs:
 
           - name: Run migrations
             run: |
-              cd orm-django && poetry run python3 manage.py makemigrations && poetry run python3 manage.py migrate
+              cd sdk/orm-django && poetry run python3 manage.py makemigrations && poetry run python3 manage.py migrate
 
           - name: Test plugin
             run: |
               # we cant run poetry shell in this env so we need to run the tests with poetry run.
               # See discussion: https://github.com/python-poetry/poetry/discussions/3526
 
-              cd orm-django && poetry run python3 manage.py test
+              cd sdk/orm-django && poetry run python3 manage.py test
