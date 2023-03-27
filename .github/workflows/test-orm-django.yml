@@ -21,8 +21,9 @@ jobs:
 
           - name: Install dependencies
             run: |
-              cd sdk/orm-django && poetry install && cd -
-              cd examples/django-encryption-example && poetry install
+              cd examples/django-encryption-example && poetry install && cd -
+              pip install tox
+              # The poetry install for sdk/orm-django is happening in the tox command.
 
           - name: Run vault
             run: |
@@ -47,8 +48,7 @@ jobs:
             run: |
               # we cant run poetry shell in this env so we need to run the tests with poetry run.
               # See discussion: https://github.com/python-poetry/poetry/discussions/3526
-
-              poetry run python3 manage.py test
+              tox
             working-directory: ./sdk/orm-django
 
           - name: Test django-encryption-example
