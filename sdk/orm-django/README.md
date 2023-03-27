@@ -57,7 +57,7 @@ from django_encryption.fields import EncryptedCharField
     * `vault_property` (**optional**) - The name of the property in the vault collection that this field is related to. Defaults to the name of the field in django.
     * `data_type_name` (**optional**) - The name of the data type in vault. Defaults to 'string'. This only has impact when generating a vault migration, and does not change the way your django model would behave.
    
-   **Note**: use `vault_collection` together with `vault_property` to specify the collection and property in vault that represent this field. This is important for permission control and audit logs. For more advanced use-cases, this would allow you to transition smoothly to using Vault as a secure storage location for PII data.
+   **Note**: use `vault_collection` together with `vault_property` to specify the collection and property in vault that represent this field. This is important for permission control and audit logs. For more advanced use-cases, this would allow you to transition smoothly to using Vault as a secure storage for PII data.
  
 
 Query your model as usual:
@@ -84,7 +84,7 @@ class Customer(models.Model):
     dob = EncryptedDateField()
 ```
 
-You can see a full working example in [our sample](https://github.com/piiano/vault-sdk-python/blob/af26c121a9912f97c9ba72f296071600c255023e/examples/django-encryption-example).
+You can see a full working example in [our sample](https://github.com/piiano/vault-python/tree/main/examples/django-encryption-example).
 
 ## Installation for local development
 
