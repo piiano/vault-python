@@ -102,4 +102,4 @@ poetry shell
 To run tests: `python manage.py test`
   * Tests should also be available from within vscode.
 
-**NOTE** Make sure you have a local copy of vault running on your machine.
+**NOTE** Make sure you have a local copy of vault running on your machine. To do so, follow the [Installations Instructions](https://piiano.com/docs/guides/get-started/).
