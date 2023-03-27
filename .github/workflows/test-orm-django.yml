@@ -20,7 +20,9 @@ jobs:
               curl -sSL https://install.python-poetry.org | python3 -
 
           - name: Install dependencies
-            run: cd sdk/orm-django && poetry install
+            run: |
+              pip install coverage coverage-badge
+              cd sdk/orm-django && poetry install
 
           - name: Run vault
             run: |
@@ -46,3 +48,18 @@ jobs:
               # See discussion: https://github.com/python-poetry/poetry/discussions/3526
 
               cd sdk/orm-django && poetry run python3 manage.py test
+
+          - name: Run tests with coverage
+            run: cd sdk/orm-django && coverage run manage.py test
+
+          - name: Generate coverage report
+            run: coverage xml
+            # The above command generates a coverage report in the XML format
+
+          - name: Update coverage badge
+            uses: badges/shields@v5
+            with:
+              args: coverage/lines.xml
+              label: Coverage
+              color: green
+              style: flat-square

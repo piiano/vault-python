@@ -28,7 +28,7 @@ poetry shell
   **Note** you might have to make sure the django-encryption dependency is already cloned and available in a nearby directory, see pyproject.toml
   * On a Mac with vscode: `code .`
 
-4. Create a local_settings.py, you can just copy local_settings_example.py to local_settings.py locally
+4. Create a local_settings.py, you can just copy [local_settings_example.py](./vault_sample_django/local_settings_example.py) to local_settings.py locally
 
 **Make sure you have a local copy of vault running** then run the following commands:
 
