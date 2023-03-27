@@ -43,7 +43,7 @@ poetry shell
 ## Website
 After running the project. The website is listening at http://127.0.0.1:8000 and looks like:
 
-<img src="imgs/website_img.png" alt="website image" width="250" height="300">
+<img src="imgs/website_img.png" alt="website image" width="400" height="350">
 
 We can add a customer by filling the fields for each property (and press "Add customer") like:
 
