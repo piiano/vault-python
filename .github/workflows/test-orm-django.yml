@@ -22,8 +22,8 @@ jobs:
           - name: Install dependencies
             run: |
               cd examples/django-encryption-example && poetry install && cd -
+              cd sdk/orm-django && poetry install && cd -
               pip install tox
-              # The poetry install for sdk/orm-django is happening in the tox command.
 
           - name: Run vault
             run: |
