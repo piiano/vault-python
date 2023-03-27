@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Customers</h1>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Address</th>
+        <th>ssn</th>
+        <th>DoB</th>
+    </tr>
+    {% for customer in customers %}
+    <tr>
+        <td>{{ customer.name }}</td>
+        <td>{{ customer.email }}</td>
+        <td>{{ customer.phone }}</td>
+        <td>{{ customer.address }}</td>
+        <td>{{ customer.ssn }}</td>
+        <td>{{ customer.dob }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Add Customer</h2>
+<form action="add_customer" method="post">
+    {% csrf_token %}
+    <table>
+        {{ add_customer_form.as_table }}
+
+    </table>
+    <input type="submit" value="Add Customer">
+</form>
+
+{% endblock %}

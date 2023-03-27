@@ -1,0 +1,81 @@
+[tool.poetry]
+name = "django-encryption"
+version = "0.1.0"
+description = "A set of fields that wrap standard Django fields with encryption provided Piiano Vault."
+authors = ["Imri Goldberg <imri.goldberg@piiano.com>"]
+license = "MIT"
+packages = [ { include = "django_encryption" } ]
+readme = "README.md"
+repository = "https://github.com/piiano/vault-python"
+keywords = [ "encryption", "django", "fields" ]
+classifiers = [
+        "Development Status :: 2 - Pre-Alpha",
+        "Intended Audience :: Developers",
+        "License :: OSI Approved :: MIT License",
+        "Environment :: Web Environment",
+        "Operating System :: OS Independent",
+        "Operating System :: POSIX",
+        "Operating System :: Unix",
+        "Topic :: Internet :: WWW/HTTP",
+        "Topic :: Security",
+        "Topic :: System :: Systems Administration :: Authentication/Directory",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Framework :: Django",
+        "Framework :: Django :: 2.2",
+        "Framework :: Django :: 3.0",
+        "Framework :: Django :: 3.1",
+        "Framework :: Django :: 3.2",
+        "Framework :: Django :: 4.0",
+]
+include = [
+    "LICENSE",
+    "CHANGELOG.md",
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Django = ">=2.2"
+mypy = "^1.0.1"
+requests = "^2.28.2"
+
+[tool.poetry.group.dev.dependencies]
+autopep8 = "^2.0.2"
+django-stubs = "^1.15.0"
+types-requests = "^2.28.11.15"
+pytest-django = "^4.5.2"
+pytest = "^7.2.2"
+mock = "^4.0.3"
+pycodestyle = "^2.8.0"
+types-mock = "^5.0.0.5"
+ipython = "^8.11.0"
+isort = "^5.12.0"
+black = "^23.1.0"
+django-coverage = "^1.2.4"
+tox = "^4.4.7"
+
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = true
+env_list = 
+    py311
+    py310
+    py39
+
+[testenv]
+whitelist_externals = poetry
+commands = 
+    poetry install -v --with dev
+    python manage.py test
+
+"""
