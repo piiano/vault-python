@@ -1,3 +1,9 @@
 [flake8]
 max-line-length = 120
 exclude = .tox,.git,*/migrations/*,*/static/CACHE/*,docs,node_modules
+ignore = E501, F401, E127, W292
+
+# E501: line too long
+# F401: imported but unused
+# E127: continuation line over-indented for visual indent
+# W292: no newline at end of file
