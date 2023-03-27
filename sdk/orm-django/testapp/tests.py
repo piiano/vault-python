@@ -1,7 +1,8 @@
 import datetime
 import os
-import mock
 import sys
+
+import mock
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.forms import ModelForm
@@ -11,7 +12,7 @@ from django.utils import timezone
 import django_encryption.fields
 from django_encryption import fields
 from django_encryption.fields import (EncryptedMixin, VaultException,
-                                             get_vault, mask_field, transform)
+                                      get_vault, mask_field, transform)
 
 from . import models
 
@@ -229,17 +230,19 @@ class TestModelTestCase(TestCase):
         self.assertEqual(enc_char_field.data_type_name, 'string')
         self.assertEqual(enc_ssn_field.data_type_name, 'SSN')
 
-    def test_migration(self):
+    def test_vault_migration(self):
         vault = get_vault()
         coll_num = len(vault.list_collections())
         vault.remove_collection(TEST_COLLECTION_NAME)
         assert len(vault.list_collections()) == coll_num - 1
 
         # Piping stdout to a file and then running the file
-        stdout_backup, sys.stdout = sys.stdout, open('./vault_migration.py', 'w+')
+        vault_migration_filename = './_test_vault_migration.py'
+        stdout_backup, sys.stdout = sys.stdout, open(vault_migration_filename, 'w+')
         call_command('generate_vault_migration')
         sys.stdout = stdout_backup
-        os.system("python3 ./vault_migration.py")
+        os.system(f"python3 {vault_migration_filename}")
+        os.remove(vault_migration_filename)
 
         collection = vault.list_collections()[coll_num - 1]
         self.assertEqual(collection["name"], TEST_COLLECTION_NAME)
