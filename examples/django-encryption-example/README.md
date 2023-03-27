@@ -19,7 +19,7 @@ As this sample utilizing Piiano vault's features, we are enabled to encrypt / de
 
 1. Clone the repo
 2. Make sure you have [python poetry](https://python-poetry.org/) installed on your machine (a global installation).
-3. cd into the directory of the repo (```examples/django-encryption-example```)
+3. cd into the directory of the repo [here](.)
 
 Run the following:
 ```commandline
@@ -41,7 +41,7 @@ poetry shell
 `python manage.py runserver`
 
 ## Website
-After running the project. The website is listening at http://127.0.0.1:8000 and looks like:
+After running the project, the website looks like this:
 
 <img src="imgs/website_img.png" alt="website image" width="400" height="350">
 
