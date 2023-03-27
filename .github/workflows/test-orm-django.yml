@@ -13,14 +13,16 @@ jobs:
           - name: Setup Python
             uses: actions/setup-python@v2
             with:
-              python-version: '3.10'
+              python-version: '3.x'
 
           - name: Install poetry
             run: |
               curl -sSL https://install.python-poetry.org | python3 -
 
           - name: Install dependencies
-            run: cd sdk/orm-django && poetry install
+            run: |
+              cd sdk/orm-django && poetry install && cd -
+              cd examples/django-encryption-example && poetry install
 
           - name: Run vault
             run: |
@@ -38,11 +40,19 @@ jobs:
 
           - name: Run migrations
             run: |
-              cd sdk/orm-django && poetry run python3 manage.py makemigrations && poetry run python3 manage.py migrate
+              poetry run python3 manage.py makemigrations && poetry run python3 manage.py migrate
+            working-directory: ./sdk/orm-django
 
           - name: Test plugin
             run: |
               # we cant run poetry shell in this env so we need to run the tests with poetry run.
               # See discussion: https://github.com/python-poetry/poetry/discussions/3526
 
-              cd sdk/orm-django && poetry run python3 manage.py test
+              poetry run python3 manage.py test
+            working-directory: ./sdk/orm-django
+
+          - name: Test django-encryption-example
+            run: |
+              cp ./vault_sample_django/local_settings_example.py ./vault_sample_django/local_settings.py
+              poetry run python3 manage.py test
+            working-directory: ./examples/django-encryption-example

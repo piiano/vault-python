@@ -10,7 +10,8 @@
 
 # Django Encrypted Model Fields
 [![Coverage Status](./imgs/coverage.svg)](https://github.com/piiano/vault-python/sdk/orm-django/imgs/coverage.svg)
-![Workflow badge](https://github.com/piiano/vault-python/actions/workflows/test-orm-django.yml/badge.svg?branch=main)
+![Workflow status badge](https://github.com/piiano/vault-python/actions/workflows/test-orm-django.yml/badge.svg?branch=main)
+![Python version badge](https://img.shields.io/pypi/pyversions/spleeter)
 
 ## About
 
