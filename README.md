@@ -13,10 +13,14 @@ _Piiano Vault: The secure home for sensitive personal data_
 *Safely store sensitive personal data in your own cloud environment with automated compliance controls.*
 
 # Vault-python
-The code in this repo contains example codes in Python (Django framework) with [Piiano Vault](http://piiano.com).
-The examples can be found in the [examples](./examples) directory.
 
-Moreover, the code also contains an sdk for Python, which can be found in the [sdk](./sdk) directory.
+This repository contains SDKs for [Piiano Vault](https://piiano.com/). The first SDK included is for Django-ORM, allowing to easily and transparently encrypt data in your app's DB. 
+
+The repository also contains examples for the included SDKs.
+
+Upcoming SDKs:
+* Automatically generated SDK for Piiano Vault's API via OpenAPI.
+* Integrations with other popular Python ORMs, e.g. SQLAlchemy.
 
 ## Background
 
