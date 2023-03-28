@@ -93,15 +93,14 @@ You can see a full working example in [our sample](https://github.com/piiano/vau
 
 ## Installation for local development (with VSCode)
 
-1. Clone the repo
-2. Ensure you have [python poetry](https://python-poetry.org/) installed on your machine (a global installation)
-3. cd into the directory of the repo (sdk/orm-django)
-4. Run the following commands:
+1. Clone the repo: `git clone https://github.com/piiano/vault-python`
+1. Ensure you have [python poetry](https://python-poetry.org/) installed on your machine (a global installation). Example: `pipx install poetry`
+1. Run the following commands from the `sdk/orm-django` directory:
    ```commandline
    poetry install
    poetry shell
    code .
    ```
-5. To run tests: `python manage.py test`. Tests should also be available from within vscode.
+1. To run tests: `python manage.py test`. Tests should also be available from within vscode.
 
 **NOTE** Make sure you have a local copy of vault running on your machine. To do so, follow the [Installations Instructions](https://piiano.com/docs/guides/get-started/).
