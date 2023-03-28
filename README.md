@@ -8,7 +8,7 @@
   </a>
 </p>
 
-_Piiano Vault: The secure home for sensitive personal data_  
+## Piiano Vault: The secure home for sensitive personal data
 
 *Safely store sensitive personal data in your own cloud environment with automated compliance controls.*
 
