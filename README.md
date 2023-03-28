@@ -8,9 +8,11 @@
   </a>
 </p>
 
-## Piiano Vault: The secure home for sensitive personal data
+# Piiano Vault
 
-*Safely store sensitive personal data in your own cloud environment with automated compliance controls.*
+**The secure home for sensitive personal data**
+
+Safely store sensitive personal data in your own cloud environment with automated compliance controls. [More details](#about-piiano-vault)
 
 # Vault-python
 
@@ -22,7 +24,7 @@ Upcoming SDKs:
 * Automatically generated SDK for Piiano Vault's API via OpenAPI.
 * Integrations with other popular Python ORMs, e.g. SQLAlchemy.
 
-## Background
+# About Piiano Vault
 
 Piiano Vault is the secure home for sensitive personal data. It allows you to safely store sensitive personal data in your own cloud environment with automated compliance controls.  
 
