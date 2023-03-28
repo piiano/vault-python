@@ -21,6 +21,13 @@ As this sample utilizing Piiano vault's features, we are enabled to encrypt / de
 2. Make sure you have [python poetry](https://python-poetry.org/) installed on your machine (a global installation).
 3. cd into the directory of the repo [here](.)
 
+There are 2 running options.
+You can either run the project using the run.sh file or run the commands manually.
+```commandline
+./run.sh
+```
+
+### Manual running
 Run the following:
 ```commandline
 poetry shell
@@ -34,7 +41,7 @@ poetry shell
 
 `python manage.py migrate`
 
-`python manage.py generate_vault_migration.py > vault_migration.py`
+`python manage.py generate_vault_migration > vault_migration.py`
 
 `python vault_migration.py`
 

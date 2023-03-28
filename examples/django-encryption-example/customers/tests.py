@@ -1,6 +1,7 @@
-from django.test import TestCase
 from django_encryption.fields import get_vault, EncryptedMixin, VaultException, mask_field, transform
 from customers.models import Customer
+from django.test import TestCase
+from django.urls import reverse
 import datetime
 
 # Create your tests here.
@@ -31,7 +32,7 @@ class TestCustomer(TestCase):
     def tearDown(self) -> None:
         vault = get_vault()
         vault.remove_collection(TEST_COLLECTION_NAME)
-    def test_add_customer(self):
+    def test_customer_model(self):
         self.add_customer()
 
         customers = list(Customer.objects.all())
@@ -65,3 +66,25 @@ class TestCustomer(TestCase):
         customer.save()
 
         return customer
+
+    def test_add_customer_view(self):
+        params = {
+            "name": "John",
+            "email": "JohnA@gmail.com",
+            "address": "John street 1st",
+            "ssn": "123-12-1234",
+            "dob": "2023-03-21",
+            "phone": "+972-54-1234567"
+        }
+        res = self.client.post(reverse('add_customer'), data=params)
+        self.assertEqual(res.status_code, 302)
+
+        res = self.client.get(reverse('index'))
+        self.assertEqual(res.status_code, 200)
+
+        self.assertContains(res, params['name'])
+        self.assertContains(res, params['email'])
+        self.assertContains(res, params['address'])
+        self.assertContains(res, "March 21, 2023") # date format
+        with mask_field(Customer.ssn):
+            self.assertContains(res, '***-**-1234')
