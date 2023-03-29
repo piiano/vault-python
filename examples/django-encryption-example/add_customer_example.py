@@ -1,7 +1,5 @@
 import os
-
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "vault_sample_django.settings")
-
 from django_encryption.fields import VaultException, get_vault # noqa
 from customers.models import Customer
 
@@ -18,5 +16,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-

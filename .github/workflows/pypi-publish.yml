@@ -1,0 +1,38 @@
+name: Publish orm-django to PyPI
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release'
+        required: true
+
+jobs:
+    build-n-publish:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+
+        - name: Install dependencies
+          run: |
+            curl -sSL https://install.python-poetry.org | python3 -
+
+        - name: Update version
+          uses: actions/checkout@v3
+          run: |
+              sed -i '' 's/version = .*/version = "${{ inputs.version }}"/g' pyproject.toml
+          working-directory: ./sdk/orm-django
+
+        - name: Commit change and push
+          run: |
+              git config --global user.email "cicd@piiano.com"
+              git config --global user.name "Github Actions"
+              git add .
+              git commit -m "update version to ${{ inputs.version }}"
+              git push
+
+        - name: Build and publish
+          run: |
+            poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
+            poetry build
+            poetry publish
+          working-directory: ./sdk/orm-django

@@ -1,0 +1,39 @@
+name: Lint - Flake8 and Mypy
+
+on:
+  push:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+       - name: Checkout
+         uses: actions/checkout@v2
+
+       - name: Set up Python
+         uses: actions/setup-python@v2
+         with:
+           python-version: '3.x'
+
+       - name: Install poetry
+         run: |
+           curl -sSL https://install.python-poetry.org | python3 -
+
+       - name: Install dependencies
+         run: |
+           cd examples/django-encryption-example && poetry install && cd -
+           cd sdk/orm-django && poetry install && cd -
+           python -m pip install --upgrade pip
+           pip install mypy
+           pip install flake8
+
+       - name: Run Flake8
+         run: |
+           flake8 --config=.flake8 .
+
+       - name: Run Mypy
+         run: |
+           cd sdk/orm-django && poetry run mypy .
+#           cd -
+#           cd examples/django-encryption-example && poetry run mypy .
+
