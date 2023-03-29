@@ -1,16 +1,16 @@
 <p>
   <a href="https://piiano.com/pii-data-privacy-vault/">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://piiano.com/docs/img/logo-developers-dark.svg">
-      <source media="(prefers-color-scheme: light)" srcset="https://piiano.com/wp-content/uploads/piiano-logo-developers.png">
-      <img alt="Piiano Vault" src="https://piiano.com/wp-content/uploads/piiano-logo-developers.png" height="40" />
-    </picture>
+    <img src="https://piiano.com/wp-content/uploads/piiano-logo-developers.png" 
+         srcset="https://piiano.com/wp-content/uploads/piiano-logo-developers.png 1x, 
+                 https://piiano.com/docs/img/logo-developers-dark.svg 2x"
+         alt="Piiano Vault"
+         height="40" />
   </a>
 </p>
 
 # Django Encrypted Model Fields
 
-[![Coverage Status](./imgs/coverage.svg)](https://github.com/piiano/vault-python/sdk/orm-django/imgs/coverage.svg)
+![Coverage Status](https://github.com/piiano/vault-python/sdk/orm-django/imgs/coverage.svg)
 ![Workflow status badge](https://github.com/piiano/vault-python/actions/workflows/test-orm-django.yml/badge.svg?branch=main)
 ![Python version badge](https://img.shields.io/pypi/pyversions/spleeter)
 
