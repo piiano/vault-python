@@ -13,9 +13,9 @@ class CustomerForm(forms.Form):
     name = forms.CharField(label='Name', max_length=100)
     email = forms.EmailField(label='Email', max_length=100)
     phone = forms.CharField(label='Phone', max_length=100)
-    address = forms.CharField(label='Address', max_length=100)
     ssn = forms.CharField(label='SSN', max_length=100)
     dob = forms.DateField(label='DOB')
+    state = forms.CharField(label='State', max_length=100)
 
 
 def index(request, errors=None):
@@ -36,9 +36,9 @@ def add_customer(request):
     customer.name = request.POST['name']
     customer.email = request.POST['email']
     customer.phone = request.POST['phone']
-    customer.address = request.POST['address']
     customer.ssn = request.POST['ssn']
     customer.dob = request.POST['dob']
+    customer.state = request.POST['state']
     customer.save()
     # now redirect to the index page
     return redirect('index')

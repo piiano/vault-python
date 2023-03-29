@@ -1,11 +1,21 @@
+import datetime
+
 from django_encryption.fields import get_vault, EncryptedMixin, VaultException, mask_field, transform
 from customers.models import Customer
 from django.test import TestCase
 from django.urls import reverse
-import datetime
+
 
 # Create your tests here.
-TEST_COLLECTION_NAME = "persons"
+TEST_COLLECTION_NAME = "customers"
+
+TEST_NAME = "John"
+TEST_EMAIL = "JohnA@gmail.com"
+TEST_PHONE = "+16505551234"
+TEST_SSN = "123-12-1234"
+MASK_SSN = "***-**-1234"
+TEST_DOB = "1990-01-01"
+TEST_STATE = "CA"
 
 
 class TestCustomer(TestCase):
@@ -42,41 +52,41 @@ class TestCustomer(TestCase):
 
         # Check that the data is returned as expected
         customer = customers[0]
-        self.assertEqual(customer.name, 'John')
-        self.assertEqual(customer.email, 'JohnA@gmail.com')
-        self.assertEqual(customer.phone, '+972541234567')
-        self.assertEqual(customer.address, 'Tel Aviv')
-        self.assertEqual(customer.dob, datetime.date(1990, 1, 1))
-        self.assertEqual(customer.ssn, '123-12-1234')
+        self.assertEqual(customer.name, TEST_NAME)
+        self.assertEqual(customer.email, TEST_EMAIL)
+        self.assertEqual(customer.phone, TEST_PHONE)
+        # test the string representation of the Date of Birth
+        self.assertEqual(customer.dob.strftime("%Y-%m-%d"), TEST_DOB)
+        self.assertEqual(customer.ssn, TEST_SSN)
 
     def test_encrypted_fields(self):
         self.add_customer()
 
         with transform("mask", Customer.ssn):
             customers = list(Customer.objects.all())
-            self.assertEqual(customers[0].ssn, '***-**-1234')
+            self.assertEqual(customers[0].ssn, MASK_SSN)
 
     @staticmethod
     def add_customer():
         customer = Customer()
-        customer.name = 'John'
-        customer.email = 'JohnA@gmail.com'
-        customer.phone = '+972-54-1234567'
-        customer.address = 'Tel Aviv'
-        customer.dob = '1990-01-01'
-        customer.ssn = '123-12-1234'
+        customer.name = TEST_NAME
+        customer.email = TEST_EMAIL
+        customer.phone = TEST_PHONE
+        customer.state = TEST_STATE
+        customer.dob = TEST_DOB
+        customer.ssn = TEST_SSN
         customer.save()
 
         return customer
 
     def test_add_customer_view(self):
         params = {
-            "name": "John",
-            "email": "JohnA@gmail.com",
-            "address": "John street 1st",
-            "ssn": "123-12-1234",
-            "dob": "2023-03-21",
-            "phone": "+972-54-1234567"
+            "name": TEST_NAME,
+            "email": TEST_EMAIL,
+            "ssn": TEST_SSN,
+            "dob": TEST_DOB,
+            "phone": TEST_PHONE,
+            "state": TEST_STATE,
         }
         res = self.client.post(reverse('add_customer'), data=params)
         self.assertEqual(res.status_code, 302)
@@ -86,7 +96,9 @@ class TestCustomer(TestCase):
 
         self.assertContains(res, params['name'])
         self.assertContains(res, params['email'])
-        self.assertContains(res, params['address'])
-        self.assertContains(res, "March 21, 2023")  # date format
+        self.assertContains(res, params['state'])
+        print(res.content)
+        self.assertContains(res, datetime.datetime.strptime(
+            params['dob'], "%Y-%m-%d").strftime("%b. %-d, %Y"))
         with mask_field(Customer.ssn):
             self.assertContains(res, '***-**-1234')

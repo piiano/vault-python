@@ -24,8 +24,8 @@ jobs:
 
         - name: Commit change and push
           run: |
-              git config user.name GithubAction
-              git config user.email action@github.com
+              git config --global user.email "cicd@piiano.com"
+              git config --global user.name "Github Actions"
               git add .
               git commit -m "update version to ${{ inputs.version }}"
               git push

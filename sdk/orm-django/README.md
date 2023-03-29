@@ -7,7 +7,7 @@
 ![coverage](https://user-images.githubusercontent.com/90671989/228512586-414c17c9-fbeb-4c47-8971-6541ec00d963.svg)
 ![Workflow status badge](https://github.com/piiano/vault-python/actions/workflows/test-orm-django.yml/badge.svg?branch=main)
 ![Python version badge](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C3.10%20%7C%203.11-blue.svg)
-[![PyPI version](https://badge.fury.io/py/django-encryption.svg)](https://badge.fury.io/py/django-encryption)
+[![PyPI version](https://img.shields.io/pypi/v/django-encryption?color=brightgreen)](https://pypi.org/project/django-encryption/)
 
 ## About
 
@@ -76,12 +76,15 @@ from django_encryption.fields import EncryptedCharField, EncryptedEmailField, En
 
 
 class Customer(models.Model):
-    name = EncryptedCharField()
-    email = EncryptedEmailField()
-    phone = EncryptedCharField()
-    address = EncryptedCharField(encryption_type=EncryptionType.randomized, expiration_secs=10)
-    ssn = EncryptedCharField(encryption_type=EncryptionType.randomized)
-    dob = EncryptedDateField()
+    name = EncryptedCharField(data_type_name='NAME')
+    email = EncryptedEmailField(data_type_name='EMAIL')
+    phone = EncryptedCharField(
+        data_type_name='PHONE_NUMBER', null=True, blank=True)
+    ssn = EncryptedCharField(
+        encryption_type=EncryptionType.randomized, data_type_name='SSN', null=True, blank=True)
+    dob = EncryptedDateField(
+        data_type_name='DATE_OF_BIRTH', null=True, blank=True)
+    state = models.CharField(max_length=100, null=True, blank=True)
 ```
 
 You can see a full working example in [our sample](https://github.com/piiano/vault-python/tree/main/examples/django-encryption-example).
