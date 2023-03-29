@@ -2,8 +2,11 @@ name: Publish orm-django to PyPI
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'Version to release'
+      plugin_version:
+        description: 'Plugin version to release'
+        required: true
+      vault_version:
+        description: 'Vault version to release'
         required: true
 
 jobs:
@@ -16,12 +19,17 @@ jobs:
           run: |
             curl -sSL https://install.python-poetry.org | python3 -
 
-        - name: Update version
+        - name: Update versions
           uses: actions/checkout@v3
           run: |
-              sed -i '' 's/version = .*/version = "${{ inputs.version }}"/g' pyproject.toml
+              sed -i '' 's/version = .*/version = "${{ inputs.plugin_version }}"/g' pyproject.toml
           working-directory: ./sdk/orm-django
-
+        
+        - name: Update vault version
+          run: |
+            sed -i '' 's/DOCKER_TAG=.*/DOCKER_TAG=${{ inputs.vault_version }}/g' run.sh
+          working-directory: ./example/django-encryption-example
+        
         - name: Commit change and push
           run: |
               git config --global user.email "cicd@piiano.com"
@@ -36,3 +44,9 @@ jobs:
             poetry build
             poetry publish
           working-directory: ./sdk/orm-django
+        
+        - name: Run example
+          run: |
+            poetry install
+            ./run.sh
+          working-directory: ./example/django-encryption-example

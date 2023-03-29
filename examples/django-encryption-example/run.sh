@@ -5,7 +5,7 @@ IFS=$'\n\t'
 shopt -s expand_aliases
 
 # Random string.
-DOCKER_TAG=${DOCKER_TAG:-1.2.2}
+DOCKER_TAG=1.2.2
 
 # Deletes container if exists.
 docker rm -f pvault-server
@@ -16,7 +16,7 @@ docker run --rm --init \
        -p 8123:8123 \
        -e PVAULT_SERVICE_LICENSE=${PVAULT_SERVICE_LICENSE} \
        -d \
-       piiano/pvault-dev:latest
+       piiano/pvault-dev:${DOCKER_TAG}
 
 alias pvault="docker run --rm -i -v $(pwd):/pwd -w /pwd piiano/pvault-cli:${DOCKER_TAG}"
 
