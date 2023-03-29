@@ -9,9 +9,9 @@
             <th>Name</th>
             <th>Email</th>
             <th>Phone</th>
-            <th>Address</th>
             <th>SSN</th>
             <th>DoB</th>
+            <th>State</th>
         </tr>
     </thead>
     {% for customer in customers %}
@@ -19,14 +19,14 @@
         <td>{{ customer.name }}</td>
         <td>{{ customer.email }}</td>
         <td>{{ customer.phone }}</td>
-        <td>{{ customer.address }}</td>
         <td>{{ customer.ssn }}</td>
         <td>{{ customer.dob }}</td>
+        <td>{{ customer.state }}</td>
     </tr>
     {% endfor %}
 </table>
 
-<hr style="margin-top: 40px; min-width: 70%; margin-inline: 0;"/>
+<hr style="margin-top: 40px; min-width: 70%; margin-inline: 0;" />
 
 <h2>New Customer Form:</h2>
 <form action="add_customer" class="pure-form pure-form-aligned" method="post">
