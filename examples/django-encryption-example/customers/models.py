@@ -1,6 +1,6 @@
 from django.db import models
 
-from django_encryption.fields import EncryptedCharField, EncryptedEmailField, EncryptedDateField, EncryptionType, raise_error
+from django_encryption.fields import EncryptedCharField, EncryptedEmailField, EncryptedDateField, EncryptionType
 
 
 class Customer(models.Model):

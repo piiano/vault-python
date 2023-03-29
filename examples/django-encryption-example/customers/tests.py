@@ -7,6 +7,7 @@ import datetime
 # Create your tests here.
 TEST_COLLECTION_NAME = "persons"
 
+
 class TestCustomer(TestCase):
     def setUp(self) -> None:
 
@@ -32,6 +33,7 @@ class TestCustomer(TestCase):
     def tearDown(self) -> None:
         vault = get_vault()
         vault.remove_collection(TEST_COLLECTION_NAME)
+
     def test_customer_model(self):
         self.add_customer()
 
@@ -85,6 +87,6 @@ class TestCustomer(TestCase):
         self.assertContains(res, params['name'])
         self.assertContains(res, params['email'])
         self.assertContains(res, params['address'])
-        self.assertContains(res, "March 21, 2023") # date format
+        self.assertContains(res, "March 21, 2023")  # date format
         with mask_field(Customer.ssn):
             self.assertContains(res, '***-**-1234')

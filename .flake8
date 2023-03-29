@@ -1,7 +1,7 @@
 [flake8]
 max-line-length = 120
-exclude = .tox,.git,*/migrations/*,*/static/CACHE/*,docs,node_modules
-ignore = E501, F401, E127, W292
+exclude = .tox,.git,*/migrations/*,*/static/CACHE/*,docs,node_modules,*/vault_migration.py,*/admin.py
+ignore = E501, E127, W292, E402
 
 # E501: line too long
 # F401: imported but unused

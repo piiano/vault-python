@@ -1,6 +1,6 @@
 import itertools
 from contextlib import contextmanager
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 import django.db
 import django.db.models
