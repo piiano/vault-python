@@ -6,7 +6,7 @@
 
 ![coverage](https://user-images.githubusercontent.com/90671989/228512586-414c17c9-fbeb-4c47-8971-6541ec00d963.svg)
 ![Workflow status badge](https://github.com/piiano/vault-python/actions/workflows/test-orm-django.yml/badge.svg?branch=main)
-![Python version badge](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C3.10%20%7C%203.11-blue)
+![Python version badge](https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C3.10%20%7C%203.11-blue.svg)
 [![PyPI version](https://badge.fury.io/py/django-encryption.svg)](https://badge.fury.io/py/django-encryption)
 
 ## About
