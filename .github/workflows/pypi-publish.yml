@@ -21,7 +21,6 @@ jobs:
             curl -sSL https://install.python-poetry.org | python3 -
 
         - name: Update versions
-          uses: actions/checkout@v3
           run: |
               sed -i '' 's/version = .*/version = "${{ inputs.plugin_version }}"/g' pyproject.toml
           working-directory: ./sdk/orm-django
