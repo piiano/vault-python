@@ -31,28 +31,23 @@ Running this example requires `Python3`, `Docker` and `PIP`.
 
 ### Manually running the example
 
-**TBD still**
-
-Run the following:
-```commandline
-pip install django-encryption
-```
-
-Create a local_settings.py, you can just copy local_settings_example.py to local_settings.py locally
-
-**Make sure you have a local copy of vault running** then run the following commands:
-
-```python
-python manage.py migrate
-python manage.py generate_vault_migration > vault_migration.py
-python vault_migration.py
-python manage.py runserver
-```
+1. Run the following:
+    ```commandline
+    pip install django-encryption
+    ```
+1. Create the `local_settings.py` file. You can start by copying [`local_settings_example.py`](./vault_sample_django/local_settings_example.py) and using it as-is.
+1. Ensure you have a local instance of vault running. Running Vault requires a license that could be obtained in the [getting started](https://piiano.com/docs/guides/get-started) section. It also explains how to run the Vault with a single container.
+1. Run the following:
+    ```commandline
+    python manage.py migrate
+    python manage.py generate_vault_migration > vault_migration.py
+    python vault_migration.py
+    python manage.py runserver
+    ```
 
 ## Application Website
 
-**TBD - Missing URL**
-After running the project, the website looks like this:
+After running the project, navigate to the Django web application over [http://localhost:8000](http://localhost:8000)
 
 <img src="website_images/website_img.png" alt="website image" width="450" height="400">
 
