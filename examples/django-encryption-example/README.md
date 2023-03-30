@@ -15,38 +15,43 @@ The sample has been built using the Django web framework and utilizes the [orm-d
 
 As this sample utilizing Piiano vault's features, we are enabled to encrypt / decrypt personal information such as SSN.
 
-## Installation for local development
+## Requirements
+Running this example requires `Python3`, `Docker` and `PIP`.
+
+## Running the example
 
 1. Clone the repo
-2. Make sure you have [python poetry](https://python-poetry.org/) installed on your machine (a global installation).
-3. cd into the directory of the repo [here](../../sdk/orm-django)
+1. In a terminal, change directory to `examples/django-encryption-example`
+1. There are two options for running this example: automatic and manual
 
-There are 2 running options.
-You can either run the project using the run.sh file or run the commands manually.
+### Automatically running the example
 ```commandline
 ./run.sh
 ```
 
-### Manual running
+### Manually running the example
+
+**TBD still**
+
 Run the following:
 ```commandline
 pip install django-encryption
 ```
-  * On a Mac with vscode: `code .`
 
-4. Create a local_settings.py, you can just copy local_settings_example.py to local_settings.py locally
+Create a local_settings.py, you can just copy local_settings_example.py to local_settings.py locally
 
 **Make sure you have a local copy of vault running** then run the following commands:
 
-`python manage.py migrate`
+```python
+python manage.py migrate
+python manage.py generate_vault_migration > vault_migration.py
+python vault_migration.py
+python manage.py runserver
+```
 
-`python manage.py generate_vault_migration > vault_migration.py`
+## Application Website
 
-`python vault_migration.py`
-
-`python manage.py runserver`
-
-## Website
+**TBD - Missing URL**
 After running the project, the website looks like this:
 
 <img src="imgs/website_img.png" alt="website image" width="400" height="350">
