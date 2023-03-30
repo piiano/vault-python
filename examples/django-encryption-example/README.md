@@ -54,12 +54,12 @@ python manage.py runserver
 **TBD - Missing URL**
 After running the project, the website looks like this:
 
-<img src="imgs/website_img.png" alt="website image" width="400" height="350">
+<img src="website_images/website_img.png" alt="website image" width="450" height="400">
 
 We can add a customer by filling the fields for each property (and press "Add customer") like:
 
-<img src="imgs/add_customer_img.png" alt="add customer image" width="250" height="300">
+<img src="website_images/add_customer_img.png" alt="add customer image" width="250" height="350">
 
 Then a new customer will appear with the given values:
 
-<img src="imgs/customer_details_img.png" alt="website image" width="500" height="100">
+<img src="website_images/customer_details_img.png" alt="website image" width="550" height="110">
