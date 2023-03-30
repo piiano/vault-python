@@ -22,13 +22,11 @@ jobs:
 
         - name: Update versions
           run: |
-            ls
             sed -i 's/version = .*/version = "${{ inputs.plugin_version }}"/g' pyproject.toml
           working-directory: sdk/orm-django
         
         - name: Update vault version
           run: |
-            ls
             sed -i 's/DOCKER_TAG=.*/DOCKER_TAG=${{ inputs.vault_version }}/g' run.sh
           working-directory: examples/django-encryption-example
         
@@ -36,7 +34,9 @@ jobs:
           run: |
               git config --global user.email "cicd@piiano.com"
               git config --global user.name "Github Actions"
-              git add .
+              git add examples/django-encryption-example/run.sh
+              git add sdk/orm-django/pyproject.toml
+              git status
               git commit -m "update version to ${{ inputs.version }}"
               git push
 
@@ -49,7 +49,8 @@ jobs:
           working-directory: sdk/orm-django
         
         - name: Run example
+          if: always()
           run: |
             poetry install
-            ./run.sh
+            PVAULT_SERVICE_LICENSE=${{ secrets.PVAULT_SERVICE_LICENSE }} /bin/bash run.sh
           working-directory: examples/django-encryption-example

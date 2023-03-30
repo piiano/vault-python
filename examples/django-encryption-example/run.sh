@@ -18,23 +18,23 @@ docker run --rm --init \
        -d \
        piiano/pvault-dev:${DOCKER_TAG}
 
-alias pvault="docker run --rm -i -v $(pwd):/pwd -w /pwd piiano/pvault-cli:${DOCKER_TAG}"
-
+alias pvault="docker run --rm -i --add-host='host.docker.internal:host-gateway' -v $(pwd):/pwd -w /pwd piiano/pvault-cli:${DOCKER_TAG}"
 
 until pvault status > /dev/null 2>&1
 do echo "Waiting for the vault to start ..." && sleep 1; done
 
 pvault version
+cp ./vault_sample_django/local_settings_example.py ./vault_sample_django/local_settings.py
 
-poetry install
+pip install django-encryption
 
 echo "Run migration"
-poetry run python3 manage.py migrate
-poetry run python3 manage.py generate_vault_migration > vault_migration.py
-poetry run python3 vault_migration.py
+python3 manage.py migrate
+python3 manage.py generate_vault_migration > vault_migration.py
+python3 vault_migration.py
 
 echo "Run app server"
-poetry run python3 manage.py runserver &
+python3 manage.py runserver &
 
 echo "Adding customer"
 # python3 add_customer_example.py
