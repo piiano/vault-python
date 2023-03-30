@@ -9,7 +9,7 @@ from customers.models import Customer
 
 
 """
-This example shows how to add a customer to the 
+This example shows how to add a customer to the
 database using the Django ORM (and not from the web interface).
 """
 
