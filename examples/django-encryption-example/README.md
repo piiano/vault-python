@@ -11,7 +11,7 @@
 # Django-encryption-example
 
 ## About
-The sample has been built using the Django web framework and utilizes the [orm-django](https://github.com/piiano/vault-sdk-python/blob/af26c121a9912f97c9ba72f296071600c255023e/sdk/orm-django) to interact with the underlying database. The sample website has several features, including the ability to create and manage users.
+The sample has been built using the Django web framework and utilizes the [orm-django](../../sdk/orm-django) to interact with the underlying database. The sample website has several features, including the ability to create and manage users.
 
 As this sample utilizing Piiano vault's features, we are enabled to encrypt / decrypt personal information such as SSN.
 
