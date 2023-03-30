@@ -22,13 +22,15 @@ jobs:
 
         - name: Update versions
           run: |
-              sed -i '' 's/version = .*/version = "${{ inputs.plugin_version }}"/g' pyproject.toml
-          working-directory: ./sdk/orm-django
+            ls
+            sed -i 's/version = .*/version = "${{ inputs.plugin_version }}"/g' pyproject.toml
+          working-directory: sdk/orm-django
         
         - name: Update vault version
           run: |
-            sed -i '' 's/DOCKER_TAG=.*/DOCKER_TAG=${{ inputs.vault_version }}/g' run.sh
-          working-directory: ./example/django-encryption-example
+            ls
+            sed -i 's/DOCKER_TAG=.*/DOCKER_TAG=${{ inputs.vault_version }}/g' run.sh
+          working-directory: examples/django-encryption-example
         
         - name: Commit change and push
           run: |
@@ -39,14 +41,15 @@ jobs:
               git push
 
         - name: Build and publish
+          if : success()
           run: |
             poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
             poetry build
             poetry publish
-          working-directory: ./sdk/orm-django
+          working-directory: sdk/orm-django
         
         - name: Run example
           run: |
             poetry install
             ./run.sh
-          working-directory: ./example/django-encryption-example
+          working-directory: examples/django-encryption-example
