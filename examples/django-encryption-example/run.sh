@@ -37,4 +37,4 @@ echo "Run app server"
 python3 manage.py runserver &
 
 echo "Adding customer"
-# python3 add_customer_example.py
+python3 add_customer_example.py
