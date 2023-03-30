@@ -30,9 +30,8 @@ You can either run the project using the run.sh file or run the commands manuall
 ### Manual running
 Run the following:
 ```commandline
-poetry shell
+pip install django-encryption
 ```
-  **Note** you might have to make sure the django-encryption dependency is already cloned and available in a nearby directory, see pyproject.toml
   * On a Mac with vscode: `code .`
 
 4. Create a local_settings.py, you can just copy local_settings_example.py to local_settings.py locally
