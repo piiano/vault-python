@@ -1,9 +1,9 @@
 from django.db import models
 
-from django_encryption.fields import EncryptedCharField, EncryptedEmailField, EncryptedDateField, EncryptionType
+from django_encryption.fields import EncryptedCharField, EncryptedEmailField, EncryptedDateField, EncryptionType, EncryptingModel
 
 
-class Customer(models.Model):
+class Customer(EncryptingModel):
     name = EncryptedCharField(data_type_name='NAME')
     email = EncryptedEmailField(data_type_name='EMAIL')
     phone = EncryptedCharField(
