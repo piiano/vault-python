@@ -1,6 +1,6 @@
 import datetime
 
-from django_encryption.fields import get_vault, EncryptedMixin, VaultException, mask_field, transform
+from django_encryption.fields import get_vault, EncryptedMixin, VaultException
 from customers.models import Customer
 from django.test import TestCase
 from django.urls import reverse
@@ -62,9 +62,9 @@ class TestCustomer(TestCase):
     def test_encrypted_fields(self):
         self.add_customer()
 
-        with transform("mask", Customer.ssn):
-            customers = list(Customer.objects.all())
-            self.assertEqual(customers[0].ssn, MASK_SSN)
+        customers = list(Customer.objects.transform(
+            "mask", Customer.ssn))
+        self.assertEqual(customers[0].ssn, MASK_SSN)
 
     @staticmethod
     def add_customer():
@@ -97,8 +97,7 @@ class TestCustomer(TestCase):
         self.assertContains(res, params['name'])
         self.assertContains(res, params['email'])
         self.assertContains(res, params['state'])
-        print(res.content)
         self.assertContains(res, datetime.datetime.strptime(
             params['dob'], "%Y-%m-%d").strftime("%b. %-d, %Y"))
-        with mask_field(Customer.ssn):
-            self.assertContains(res, '***-**-1234')
+
+        self.assertContains(res, MASK_SSN)

@@ -61,6 +61,8 @@ import os
 from typing import Dict, List
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "__PROJECT_NAME__.settings")
+import django
+django.setup()
 
 from django_encryption.fields import VaultException, get_vault # noqa
 
