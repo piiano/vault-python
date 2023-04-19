@@ -1,12 +1,12 @@
-name: Publish orm-django to PyPI
+name: Publish
 on:
   workflow_dispatch:
     inputs:
-      plugin_version:
-        description: 'Plugin version to release'
+      publish_version:
+        description: 'Package version to publish'
         required: true
       vault_version:
-        description: 'Vault version to release'
+        description: 'Vault version'
         required: true
 
 jobs:
@@ -22,7 +22,7 @@ jobs:
 
         - name: Update versions
           run: |
-            sed -i 's/version = .*/version = "${{ inputs.plugin_version }}"/g' pyproject.toml
+            sed -i 's/version = .*/version = "${{ inputs.publish_version }}"/g' pyproject.toml
           working-directory: sdk/orm-django
         
         - name: Update vault version
@@ -37,7 +37,7 @@ jobs:
               git add examples/django-encryption-example/run.sh
               git add sdk/orm-django/pyproject.toml
               git status
-              git commit -m "update version to ${{ inputs.version }}"
+              git commit -m "update version to ${{ inputs.publish_version }}"
               git push
 
         - name: Build and publish
