@@ -37,6 +37,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          set -x
           curl -sSL https://install.python-poetry.org | python3 -
           pipx install toml-cli
 
@@ -44,6 +45,7 @@ jobs:
         if: inputs.bump-package != 'none'
         run: |
           # find current version
+          set -x
           PYPI_CUR_VER=`toml get --toml-path pyproject.toml tool.poetry.version`
           PYPI_NEXT_VER=`npx --yes semver -i  ${{ inputs.bump-package }} ${PYPI_CUR_VER}`
           toml set --toml-path pyproject.toml tool.poetry.version ${PYPI_NEXT_VER}
