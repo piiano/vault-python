@@ -62,6 +62,13 @@ jobs:
           git commit -m "update version to ${{ inputs.bump-package }}"
           git push
 
+      - name: Run example
+        if: success()
+        run: |
+          poetry install
+          PVAULT_SERVICE_LICENSE=${{ secrets.PVAULT_SERVICE_LICENSE }} /bin/bash run.sh
+        working-directory: examples/django-encryption-example
+
       - name: Build and publish
         if: success() && inputs.skip_publish != 'true'
         run: |
@@ -70,9 +77,3 @@ jobs:
           poetry publish
         working-directory: sdk/orm-django
 
-      - name: Run example
-        if: always()
-        run: |
-          poetry install
-          PVAULT_SERVICE_LICENSE=${{ secrets.PVAULT_SERVICE_LICENSE }} /bin/bash run.sh
-        working-directory: examples/django-encryption-example
