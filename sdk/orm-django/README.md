@@ -62,8 +62,8 @@ from django_encryption.fields import EncryptedCharField
 
 Query your model as usual, keeping the following in mind:
 
-* Read queries are batched, so reading from the DB will generate one API call per field, while writing to the DB is not batched (so an API call for each field in each instance).
-* By default all fields are eager - similarly to calling prefetch_related(field_name) on a foreign key.
+* Read queries are batched. Reading from the Database will generate a single API call per field. Writing to the Database is not batched and will generate an API call for each field in each instance.
+* By default all fields are eagerly fetched - similarly to calling prefetch_related(field_name) on a foreign key.
 
 The SDK also supports masking and other vault transformations by using mask(MyModel.my_field) or transform('transformation-name', MyModel.my_field) as part of the query.
 
