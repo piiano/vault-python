@@ -6,8 +6,6 @@ from django import forms
 # Create your views here.
 from customers.models import Customer
 
-from django_encryption.fields import transform
-
 
 class CustomerForm(forms.Form):
     name = forms.CharField(label='Name', max_length=100)
@@ -20,8 +18,7 @@ class CustomerForm(forms.Form):
 
 def index(request, errors=None):
     # get all customers
-    with transform("mask", Customer.ssn):
-        customers = list(Customer.objects.all())
+    customers = list(Customer.objects.transform("mask", Customer.ssn).all())
     # render the index template and pass in the customers
     return render(request, 'index.html', dict(customers=customers, add_customer_form=CustomerForm(), errors=errors))
 

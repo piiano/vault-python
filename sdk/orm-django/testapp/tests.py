@@ -1,22 +1,27 @@
 import datetime
 import os
 import sys
+from datetime import timezone
 
 import mock
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.forms import ModelForm
 from django.test import TestCase
-from django.utils import timezone
 
 import django_encryption.fields
 from django_encryption import fields
-from django_encryption.fields import (EncryptedMixin, VaultException,
-                                      get_vault, mask_field, transform)
+from django_encryption.fields import EncryptedMixin, VaultException, get_vault
 
 from . import models
 
 TEST_COLLECTION_NAME = 'test'
+
+SSN_VALUE = '123-45-6789'
+OTHER_SSN_VALUE = '987-65-4321'
+MASK_SSN_VALUE = '***-**-6789'
+SSN_VALUE2 = '856-45-6789'
+MASK_SSN_VALUE2 = '***-**-6789'
 
 
 class TestSettings(TestCase):
@@ -75,7 +80,7 @@ class TestModelTestCase(TestCase):
         inst.enc_small_integer_field = 123456789
         inst.enc_positive_small_integer_field = 123456789
         inst.enc_big_integer_field = 9223372036854775807
-        inst.enc_ssn_field = '123-45-6789'
+        inst.enc_ssn_field = SSN_VALUE
         inst.save()
 
         inst = models.TestModel.objects.get()
@@ -91,7 +96,7 @@ class TestModelTestCase(TestCase):
         self.assertEqual(inst.enc_small_integer_field, 123456789)
         self.assertEqual(inst.enc_positive_small_integer_field, 123456789)
         self.assertEqual(inst.enc_big_integer_field, 9223372036854775807)
-        self.assertEqual(inst.enc_ssn_field, '123-45-6789')
+        self.assertEqual(inst.enc_ssn_field, SSN_VALUE)
 
         test_date = datetime.date(2012, 2, 1)
         test_datetime = datetime.datetime(2012, 1, 1, 2, tzinfo=timezone.utc)
@@ -105,7 +110,7 @@ class TestModelTestCase(TestCase):
         inst.enc_small_integer_field = -123456789
         inst.enc_positive_small_integer_field = 0
         inst.enc_big_integer_field = -9223372036854775806
-        inst.enc_ssn_field = '987-65-4321'
+        inst.enc_ssn_field = OTHER_SSN_VALUE
         inst.save()
 
         inst = models.TestModel.objects.get()
@@ -114,9 +119,6 @@ class TestModelTestCase(TestCase):
         self.assertEqual(inst.enc_date_field, test_date)
         self.assertEqual(inst.enc_date_now_field, datetime.date.today())
         self.assertEqual(inst.enc_date_now_add_field, datetime.date.today())
-        # be careful about sqlite testing, which doesn't support native dates
-        if timezone.is_naive(inst.enc_datetime_field):
-            inst.enc_datetime_field = timezone.make_aware(inst.enc_datetime_field, timezone.utc)
         self.assertEqual(inst.enc_datetime_field, test_datetime)
         self.assertEqual(inst.enc_boolean_field, False)
         self.assertEqual(inst.enc_integer_field, -123456789)
@@ -124,7 +126,7 @@ class TestModelTestCase(TestCase):
         self.assertEqual(inst.enc_small_integer_field, -123456789)
         self.assertEqual(inst.enc_positive_small_integer_field, 0)
         self.assertEqual(inst.enc_big_integer_field, -9223372036854775806)
-        self.assertEqual(inst.enc_ssn_field, '987-65-4321')
+        self.assertEqual(inst.enc_ssn_field, OTHER_SSN_VALUE)
 
         inst.save()
         inst = models.TestModel.objects.get()
@@ -159,10 +161,14 @@ class TestModelTestCase(TestCase):
         self.assertEqual(enc_boolean_field.get_internal_type(), 'TextField')
 
         self.assertEqual(enc_integer_field.get_internal_type(), 'TextField')
-        self.assertEqual(enc_positive_integer_field.get_internal_type(), 'TextField')
-        self.assertEqual(enc_small_integer_field.get_internal_type(), 'TextField')
-        self.assertEqual(enc_positive_small_integer_field.get_internal_type(), 'TextField')
-        self.assertEqual(enc_big_integer_field.get_internal_type(), 'TextField')
+        self.assertEqual(
+            enc_positive_integer_field.get_internal_type(), 'TextField')
+        self.assertEqual(
+            enc_small_integer_field.get_internal_type(), 'TextField')
+        self.assertEqual(
+            enc_positive_small_integer_field.get_internal_type(), 'TextField')
+        self.assertEqual(
+            enc_big_integer_field.get_internal_type(), 'TextField')
         self.assertEqual(enc_ss_field.get_internal_type(), 'TextField')
 
     def test_auto_date(self):
@@ -213,16 +219,23 @@ class TestModelTestCase(TestCase):
     def test_mask_value(self):
         inst = models.TestModel()
 
-        inst.enc_ssn_field = '856-45-6789'
+        inst.enc_ssn_field = SSN_VALUE2
         inst.save()
 
-        with mask_field(models.TestModel.enc_ssn_field):
-            objects = list(models.TestModel.objects.all())
-            self.assertEqual(objects[0].enc_ssn_field, '***-**-6789')
+        objects = list(models.TestModel.objects.mask(
+            models.TestModel.enc_ssn_field).all())
+        self.assertEqual(objects[0].enc_ssn_field, MASK_SSN_VALUE2)
 
-        with transform("mask", models.TestModel.enc_ssn_field):
-            objects = list(models.TestModel.objects.all())
-            self.assertEqual(objects[0].enc_ssn_field, '***-**-6789')
+        objects = list(models.TestModel.objects.transform(
+            'mask', models.TestModel.enc_ssn_field).all())
+        self.assertEqual(objects[0].enc_ssn_field, MASK_SSN_VALUE2)
+
+        objects = list(models.TestModel.objects.mask('enc_ssn_field').all())
+        self.assertEqual(objects[0].enc_ssn_field, MASK_SSN_VALUE2)
+
+        objects = list(models.TestModel.objects.transform(
+            'mask', 'enc_ssn_field').all())
+        self.assertEqual(objects[0].enc_ssn_field, MASK_SSN_VALUE2)
 
     def test_data_type_name(self):
         enc_char_field = models.TestModel.enc_char_field.field
@@ -235,16 +248,23 @@ class TestModelTestCase(TestCase):
         coll_num = len(vault.list_collections())
         vault.remove_collection(TEST_COLLECTION_NAME)
         assert len(vault.list_collections()) == coll_num - 1
+        orig_collection_names = {c["name"] for c in vault.list_collections()}
 
         # Piping stdout to a file and then running the file
         vault_migration_filename = './_test_vault_migration.py'
-        stdout_backup, sys.stdout = sys.stdout, open(vault_migration_filename, 'w+')
+        stdout_backup, sys.stdout = sys.stdout, open(
+            vault_migration_filename, 'w+')
         call_command('generate_vault_migration')
         sys.stdout = stdout_backup
-        os.system(f"python3 {vault_migration_filename}")
+        os.system(f"python {vault_migration_filename}")
         os.remove(vault_migration_filename)
 
-        collection = vault.list_collections()[coll_num - 1]
+        collections = vault.list_collections()
+        new_collections = [c for c in collections if c["name"]
+                           not in orig_collection_names]
+        assert len(new_collections) == 1
+        collection = new_collections[0]
         self.assertEqual(collection["name"], TEST_COLLECTION_NAME)
         self.assertEqual(collection["type"], "PERSONS")
-        self.assertEqual(len(collection["properties"]) + 1, len(models.TestModel._meta.get_fields()))
+        self.assertEqual(
+            len(collection["properties"]) + 1, len(models.TestModel._meta.get_fields()))
