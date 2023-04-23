@@ -20,11 +20,8 @@ on:
           - minor
           - major
       skip_publish:
-        required: optional
-        type: choice
-        options:
-          - true
-          - false
+        required: true
+        type: boolean
 
 jobs:
   build-n-publish:
