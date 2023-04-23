@@ -2,55 +2,78 @@ name: Publish
 on:
   workflow_dispatch:
     inputs:
-      publish_version:
-        description: 'Package version to publish'
-        required: true
       vault_version:
-        description: 'Vault version'
+        description: "Vault version"
         required: true
+      bump-package:
+        description: |-
+          How to bump `django-encryption` version:
+          - `none` - do not bump version and do not publish
+          - `patch` - bump patch version
+          - `minor` - bump minor version
+          - `major` - bump major version
+        required: true
+        type: choice
+        options:
+          - none
+          - patch
+          - minor
+          - major
+      skip_publish:
+        required: optional
+        type: choice
+        options:
+          - true
+          - false
 
 jobs:
-    build-n-publish:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout
-          uses: actions/checkout@v2
+  build-n-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
-        - name: Install dependencies
-          run: |
-            curl -sSL https://install.python-poetry.org | python3 -
+      - name: Update vault version
+        run: |
+          sed -i 's/DOCKER_TAG=.*/DOCKER_TAG=${{ inputs.vault_version }}/g' run.sh
+        working-directory: examples/django-encryption-example
 
-        - name: Update versions
-          run: |
-            sed -i 's/version = .*/version = "${{ inputs.publish_version }}"/g' pyproject.toml
-          working-directory: sdk/orm-django
-        
-        - name: Update vault version
-          run: |
-            sed -i 's/DOCKER_TAG=.*/DOCKER_TAG=${{ inputs.vault_version }}/g' run.sh
-          working-directory: examples/django-encryption-example
-        
-        - name: Commit change and push
-          run: |
-              git config --global user.email "cicd@piiano.com"
-              git config --global user.name "Github Actions"
-              git add examples/django-encryption-example/run.sh
-              git add sdk/orm-django/pyproject.toml
-              git status
-              git commit -m "update version to ${{ inputs.publish_version }}"
-              git push
+      - name: Install dependencies
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          pipx install toml-cli
 
-        - name: Build and publish
-          if : success()
-          run: |
-            poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
-            poetry build
-            poetry publish
-          working-directory: sdk/orm-django
-        
-        - name: Run example
-          if: always()
-          run: |
-            poetry install
-            PVAULT_SERVICE_LICENSE=${{ secrets.PVAULT_SERVICE_LICENSE }} /bin/bash run.sh
-          working-directory: examples/django-encryption-example
+      - name: Update PYPI package versions
+        if: inputs.bump-package != 'none'
+        run: |
+          # find current version
+          PYPI_CUR_VER=`toml get --toml-path pyproject.toml tool.poetry.version`
+          PYPI_NEXT_VER=`npx --yes semver -i  ${{ inputs.bump-package }} ${PYPI_CUR_VER}`
+          toml set --toml-path pyproject.toml tool.poetry.version ${PYPI_NEXT_VER}
+        working-directory: sdk/orm-django
+
+      - name: Commit change and push
+        if: inputs.bump-package != 'none' && inputs.skip_publish != 'true'
+        run: |
+          git config --global user.email "cicd@piiano.com"
+          git config --global user.name "Github Actions"
+          git add examples/django-encryption-example/run.sh
+          git add sdk/orm-django/pyproject.toml
+          git status
+          git commit -m "update version to ${{ inputs.bump-package }}"
+          git push
+
+      - name: Build and publish
+        if: success() && inputs.skip_publish != 'true'
+        run: |
+          poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
+          poetry build
+          poetry publish
+        working-directory: sdk/orm-django
+
+      - name: Run example
+        if: always()
+        run: |
+          poetry install
+          PVAULT_SERVICE_LICENSE=${{ secrets.PVAULT_SERVICE_LICENSE }} /bin/bash run.sh
+        working-directory: examples/django-encryption-example
