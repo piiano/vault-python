@@ -56,14 +56,16 @@ from django_encryption.fields import EncryptedCharField
    - `vault_collection` (**optional**) - The name of the vault collection that this field is related to. Defaults to `settings.VAULT_DEFAULT_COLLECTION`
    - `vault_property` (**optional**) - The name of the property in the vault collection that this field is related to. Defaults to the name of the field in django.
    - `data_type_name` (**optional**) - The name of the data type in vault. Defaults to 'string'. This only has impact when generating a vault migration, and does not change the way your django model would behave.
+   - `eager` (default: **true**) - whether or not value will be decrypted (in a batch operation) as soon as it is fetched from the DB. If not, the value will be decrypted the first time it is accessed.
 
    **Note**: use `vault_collection` together with `vault_property` to specify the collection and property in vault that represent this field. This is important for permission control and audit logs. For more advanced use-cases, this would allow you to transition smoothly to using Vault as a secure storage for PII data.
 
-Query your model as usual:
+Query your model as usual, keeping the following in mind:
 
-- Caveat: right now, an API call to vault will be generated for each field in each Model instance you encrypt or decrypt. In the future this will be batched.
+* Read queries are batched, so reading from the DB will generate one API call per field, while writing to the DB is not batched (so an API call for each field in each instance).
+* By default all fields are eager - similarly to calling prefetch_related(field_name) on a foreign key.
 
-You can wrap your queries with: `with fields.mask_field(MyModel.my_field):` (or `transform` or `with_reason`):
+The SDK also supports masking and other vault transformations by using mask(MyModel.my_field) or transform('transformation-name', MyModel.my_field) as part of the query.
 
 - This tells the encryption SDK to mask the values of MyModel.my_field. So for example, for an SSN you would get "**\*-**-6789".
 - All vault's supported transformations are also supported using the `transform` context manager. See [Built-in transformations](https://piiano.com/docs/guides/manage-transformations/built-in-transformations) in Vault's API documentation for a list of Vault's supported transformations.
