@@ -60,7 +60,7 @@ jobs:
           git add sdk/orm-django/pyproject.toml
           git status
           git commit -m "update version to ${{ inputs.bump-package }}"
-          git push
+          git push https://x-access-token:${{ secrets.CICD_RELEASES_PAT }}@github.com/piiano/vault-python.git
 
       - name: Run example
         if: success()
