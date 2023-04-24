@@ -29,6 +29,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.CICD_RELEASES_PAT }}
 
       - name: Update vault version
         run: |
@@ -60,7 +62,7 @@ jobs:
           git add sdk/orm-django/pyproject.toml
           git status
           git commit -m "update version to ${{ inputs.bump-package }}"
-          git push https://x-access-token:${{ secrets.CICD_RELEASES_PAT }}@github.com/${{ github.repository }}.git main
+          git push
           
 
       - name: Run example
