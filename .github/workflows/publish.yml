@@ -5,6 +5,7 @@ on:
       vault_version:
         description: "Vault version"
         required: true
+        type: string
       bump-package:
         description: |-
           How to bump `django-encryption` version:
@@ -12,23 +13,22 @@ on:
           - `patch` - bump patch version
           - `minor` - bump minor version
           - `major` - bump major version
-        required: true
+        default: none
         type: choice
         options:
           - none
           - patch
           - minor
           - major
-      skip_publish:
-        required: true
-        type: boolean
 
 jobs:
   build-n-publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.CICD_RELEASES_PAT }}
 
       - name: Update vault version
         run: |
@@ -52,7 +52,7 @@ jobs:
         working-directory: sdk/orm-django
 
       - name: Commit change and push
-        if: inputs.bump-package != 'none' && inputs.skip_publish != 'true'
+        if: inputs.bump-package != 'none'
         run: |
           git config --global user.email "cicd@piiano.com"
           git config --global user.name "Github Actions"
@@ -60,21 +60,19 @@ jobs:
           git add sdk/orm-django/pyproject.toml
           git status
           git commit -m "update version to ${{ inputs.bump-package }}"
-          git push https://x-access-token:${{ secrets.CICD_RELEASES_PAT }}@github.com/${{ github.repository }}.git main
+          git push
           
 
       - name: Run example
-        if: success()
         run: |
           poetry install
           PVAULT_SERVICE_LICENSE=${{ secrets.PVAULT_SERVICE_LICENSE }} /bin/bash run.sh
         working-directory: examples/django-encryption-example
 
       - name: Build and publish
-        if: success() && inputs.skip_publish != 'true'
+        if: inputs.bump-package != 'none'
         run: |
           poetry config pypi-token.pypi ${{ secrets.PYPI_API_TOKEN }}
           poetry build
           poetry publish
         working-directory: sdk/orm-django
-
