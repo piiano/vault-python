@@ -54,6 +54,8 @@ jobs:
       - name: Commit change and push
         if: inputs.bump-package != 'none'
         run: |
+          git config --global user.email "cicd@piiano.com"
+          git config --global user.name "Github Actions"
           git add examples/django-encryption-example/run.sh
           git add sdk/orm-django/pyproject.toml
           git status
