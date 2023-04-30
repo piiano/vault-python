@@ -46,10 +46,16 @@ jobs:
         run: |
           git config --global user.email "cicd@piiano.com"
           git config --global user.name "Github Actions"
-          git add README.md '**/README.md'
-          git status
-          git commit -a -m 'Update README.md files to Vault version ${{ inputs.vault_version }}'
-          git push
+          git_status=$(git status -s)
+
+          if [ -n "$git_status" ]; then
+            echo "There are changes to commit"
+            git add README.md '**/README.md'
+            git commit -a -m 'Update README.md files to Vault version ${{ inputs.vault_version }}'
+            git push
+          else
+            echo "No changes to commit"
+          fi
 
   build-n-publish:
     runs-on: ubuntu-latest
@@ -89,11 +95,17 @@ jobs:
         run: |
           git config --global user.email "cicd@piiano.com"
           git config --global user.name "Github Actions"
-          git add examples/django-encryption-example/run.sh
-          git add sdk/orm-django/pyproject.toml
-          git status
-          git commit -m "update version to ${{ inputs.bump-package }}"
-          git push
+
+          git_status=$(git status -s)
+          if [ -n "$git_status" ]; then
+            echo "There are changes to commit"
+            git add examples/django-encryption-example/run.sh
+            git add sdk/orm-django/pyproject.toml
+            git commit -m "update version to ${{ inputs.bump-package }}"
+            git push
+          else
+            echo "No changes to commit"
+          fi
 
       - name: Run example
         run: |
