@@ -23,6 +23,12 @@ This is a fork of
 <https://gitlab.com/lansharkconsulting/django/django-encrypted-model-fields> which in turn is a fork of <https://github.com/foundertherapy/django-cryptographic-fields>. It has
 been renamed, and updated to support encryption through Piiano Vault's API.
 
+**Note:**
+
+This package is compatible with Vault version 1.4.0.
+For a Vault client compatible with other versions of Vault, check [other versions of this package](https://pypi.org/project/django-encryption/).
+
+
 ## Usage
 
 First install the library:

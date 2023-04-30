@@ -61,7 +61,6 @@ jobs:
           git status
           git commit -m "update version to ${{ inputs.bump-package }}"
           git push
-          
 
       - name: Run example
         run: |
