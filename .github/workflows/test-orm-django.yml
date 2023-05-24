@@ -1,6 +1,10 @@
 name: Test orm-django
 on:
   push:
+      # Run for all branches excluding dependabot branches. Do NOT run for tags.
+      branches-ignore:
+        - "dependabot/**"
+
 
 jobs:
     test:
