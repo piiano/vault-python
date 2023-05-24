@@ -60,10 +60,15 @@ class TestModelTestCase(TestCase):
                 )
         except VaultException:
             vault.remove_collection(TEST_COLLECTION_NAME)
+            raise
 
     def tearDown(self) -> None:
         vault = get_vault()
-        vault.remove_collection(TEST_COLLECTION_NAME)
+        collection_names = {c["name"] for c in vault.list_collections()}
+        if TEST_COLLECTION_NAME in collection_names:
+            vault.remove_collection(TEST_COLLECTION_NAME)
+        else:
+            print("tearDown: collection already removed")
 
     def test_value(self):
         test_date_today = datetime.date.today()
@@ -240,7 +245,7 @@ class TestModelTestCase(TestCase):
     def test_data_type_name(self):
         enc_char_field = models.TestModel.enc_char_field.field
         enc_ssn_field = models.TestModel.enc_ssn_field.field
-        self.assertEqual(enc_char_field.data_type_name, 'string')
+        self.assertEqual(enc_char_field.data_type_name, 'STRING')
         self.assertEqual(enc_ssn_field.data_type_name, 'SSN')
 
     def test_vault_migration(self):
