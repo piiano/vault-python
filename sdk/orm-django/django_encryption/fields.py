@@ -233,7 +233,7 @@ class EncryptedMixin(object):
     @property
     def data_type_name(self) -> str:
         if self._data_type_name is None:
-            return 'string'
+            return 'STRING'
         return self._data_type_name
 
     @property
