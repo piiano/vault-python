@@ -215,13 +215,13 @@ files = [
 
 [[package]]
 name = "django"
-version = "4.2"
+version = "4.2.3"
 description = "A high-level Python web framework that encourages rapid development and clean, pragmatic design."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "Django-4.2-py3-none-any.whl", hash = "sha256:ad33ed68db9398f5dfb33282704925bce044bef4261cd4fb59e4e7f9ae505a78"},
-    {file = "Django-4.2.tar.gz", hash = "sha256:c36e2ab12824e2ac36afa8b2515a70c53c7742f0d6eaefa7311ec379558db997"},
+    {file = "Django-4.2.3-py3-none-any.whl", hash = "sha256:f7c7852a5ac5a3da5a8d5b35cc6168f31b605971441798dac845f17ca8028039"},
+    {file = "Django-4.2.3.tar.gz", hash = "sha256:45a747e1c5b3d6df1b141b1481e193b033fd1fdbda3ff52677dc81afdaacbaed"},
 ]
 
 [package.dependencies]
@@ -945,4 +945,8 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<4.0"
+<<<<<<< HEAD
 content-hash = "77ce90d7ac15904367a39cd2aa5bbce49f80aa8b6ed9dbebdf2570cc215309bb"
+=======
+content-hash = "95abcfc2c5d25867e4092618a11555a5b3b5c16b5a2e5fd790b6f5a4ec6538d4"
+>>>>>>> 2b19dca (Bump django from 4.2 to 4.2.3 in /examples/django-encryption-example)
