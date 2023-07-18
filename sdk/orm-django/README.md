@@ -1,5 +1,5 @@
 <a href="https://piiano.com/pii-data-privacy-vault/">
-   <img alt="Piiano Vault" src="https://piiano.com/wp-content/uploads/piiano-logo-developers.png" height="40" />
+   <img alt="Piiano Vault" src="https://docs.piiano.com/img/logo-developers.svg" height="40" />
 </a>
 
 # Django Encrypted Model Fields
