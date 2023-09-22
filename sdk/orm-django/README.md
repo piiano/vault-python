@@ -25,7 +25,7 @@ been renamed, and updated to support encryption through Piiano Vault's API.
 
 **Note:**
 
-This package is compatible with Vault version 1.8.2.
+This package is compatible with Vault version 1.8.3.
 For a Vault client compatible with other versions of Vault, check [other versions of this package](https://pypi.org/project/django-encryption/).
 
 
