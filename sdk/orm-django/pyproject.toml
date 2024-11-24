@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "django-encryption"
-version = "0.3.41"
+version = "0.3.42"
 description = "A set of fields that wrap standard Django fields with encryption provided Piiano Vault."
 authors = ["Imri Goldberg <imri.goldberg@piiano.com>"]
 license = "MIT"
