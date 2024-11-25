@@ -5,7 +5,7 @@ IFS=$'\n\t'
 shopt -s expand_aliases
 
 # Random string.
-DOCKER_TAG=1.13.3
+DOCKER_TAG=1.14.0
 
 # Deletes container if exists.
 docker rm -f pvault-server
