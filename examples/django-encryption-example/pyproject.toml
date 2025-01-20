@@ -5,6 +5,7 @@ description = ""
 authors = ["Imri Goldberg <lorgandon@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+packages = [{include = "vault_sample_django", from = "."}]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
