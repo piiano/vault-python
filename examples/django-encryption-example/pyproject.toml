@@ -8,11 +8,11 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
-Django = "^4.1.7"
+Django = "^4.2.3"
 django-rest-framework = "^0.1.0"
 requests = "^2.28.2"
 Markdown = "^3.4.1"
-django-filter = "^22.1"
+django-filter = "^23.2"
 mypy = "^1.0.1"
 autopep8 = "^2.0.2"
 django-encryption = {path = "../../sdk/orm-django/", develop = true}
@@ -23,10 +23,15 @@ django-encryption = {path = "../../sdk/orm-django/", develop = true}
 pytest = "^7.2.2"
 mypy = "^1.0.1"
 pytest-django = "^4.5.2"
+<<<<<<< HEAD
 django-stubs = "^1.15.0"
+types-requests = "^2.31.0.2"
+=======
+django-stubs = "^4.2.3"
 types-requests = "^2.28.11.15"
+>>>>>>> 978e7ce (Bump django-stubs in /examples/django-encryption-example)
 autopep8 = "^2.0.2"
-ipython = "^8.11.0"
+ipython = "^8.12.2"
 django-coverage = "^1.2.4"
 
 [build-system]
